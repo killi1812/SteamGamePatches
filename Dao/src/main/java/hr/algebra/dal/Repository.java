@@ -10,7 +10,7 @@ import java.util.Optional;
 
 /**
  *
- * @author lecturerf6
+ * @author fran
  */
 public interface Repository {
     int createArticle(Article article) throws Exception;
@@ -19,4 +19,5 @@ public interface Repository {
     void deleteArticle(int id) throws Exception;
     Optional<Article> selectArticle(int id) throws Exception;
     List<Article> selectArticles() throws Exception;
+    //TODO create repo functions
 }
