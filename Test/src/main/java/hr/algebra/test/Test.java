@@ -43,7 +43,7 @@ public class Test {
 
         try {
             List<Game> games = repo.getGames();
-            games.forEach(g -> System.out.print(g.name));
+            games.forEach(g -> System.out.println(g.name));
         } catch (Exception e) {
             System.out.println(e);
         }
