@@ -30,7 +30,7 @@ create table Authors(
 );
 
 create table Patches(
-    IdPatch int primary key identity(1,1) not null,
+    idPatch int primary key identity(1,1) not null,
     title nvarchar(255) not null,
     description nvarchar(455) not null,
     [link] nvarchar(255) not null,
