@@ -151,31 +151,52 @@ public class SqlRepository implements Repository {
 
     @Override
     public int createAuthor(Author author) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(CREATE_AUTHOR)) {
+
+            stmt.setString(NAME, author.name);
+            stmt.registerOutParameter(ID_AUTHOR, Types.INTEGER);
+            stmt.executeUpdate();
+            return stmt.getInt(ID_AUTHOR);
+        }
     }
 
     @Override
     public void updateAuthor(int id, Author author) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(UPDATE_AUTHOR)) {
+            stmt.setInt(ID_AUTHOR, id);
+            stmt.setString(NAME, author.name);
+            stmt.executeUpdate();
+        }
     }
 
     @Override
     public void deleteAuthor(int id) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(DELETE_AUTHOR)) {
+            stmt.setInt(ID_AUTHOR, id);
+            stmt.executeUpdate();
+        }
     }
 
     @Override
     public Optional<Author> getAuthor(int id) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(GET_AUTHOR)) {
+            stmt.setInt(ID_AUTHOR, id);
+            try (var rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(new Author(id, rs.getString(NAME)));
+
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
     public List<Author> getAuthors() throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public int createUser(User user) throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -192,18 +213,61 @@ public class SqlRepository implements Repository {
     //private static final String GET_USERS = "{ CALL ReadUsers }";
 
     @Override
+    public int createUser(User user) throws Exception {
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(CREATE_USER)) {
+
+            stmt.setString(USERNAME, user.username);
+            stmt.setString(PASSWORD, user.password);
+            stmt.setBoolean(IS_ADMIN, user.isAdmin);
+
+            stmt.registerOutParameter(ID_USER, Types.INTEGER);
+            stmt.executeUpdate();
+            return stmt.getInt(ID_USER);
+        }
+    }
+
+    @Override
     public void updateUser(int id, User user) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(UPDATE_USER)) {
+
+            stmt.setInt(ID_USER, id);
+            stmt.setString(USERNAME, user.username);
+            stmt.setString(PASSWORD, user.password);
+            stmt.setBoolean(IS_ADMIN, user.isAdmin);
+
+            stmt.executeUpdate();
+        }
     }
 
     @Override
     public void deleteUser(int id) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(DELETE_USER)) {
+
+            stmt.setInt(ID_USER, id);
+            stmt.executeUpdate();
+        }
     }
 
     @Override
     public Optional<User> getUser(int id) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(DELETE_USER)) {
+
+            stmt.setInt(ID_USER, id);
+            try (var rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(new User(
+                            rs.getInt(ID_USER),
+                            rs.getString(USERNAME),
+                            rs.getString(PASSWORD),
+                            rs.getBoolean(IS_ADMIN)));
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     @Override

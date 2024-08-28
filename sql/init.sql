@@ -221,7 +221,8 @@ END;
 CREATE OR ALTER PROCEDURE CreateUser
     @username NVARCHAR(255),
     @password NVARCHAR(255),
-    @isAdmin BIT
+    @isAdmin BIT,
+    @idUser INT OUT
 AS
 BEGIN
     INSERT INTO [Users] (username, [password], isAdmin)
@@ -265,7 +266,8 @@ END;
 
 -- Create Author
 CREATE OR ALTER PROCEDURE CreateAuthor
-    @name NVARCHAR(255)
+    @name NVARCHAR(255),
+    @IdAuthor INT OUT
 AS
 BEGIN
     INSERT INTO Authors ([name])
