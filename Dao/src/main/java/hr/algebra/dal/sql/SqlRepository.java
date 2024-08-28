@@ -22,155 +22,31 @@ import javax.sql.DataSource;
 
 public class SqlRepository implements Repository {
 
-    private static final String ID_ARTICLE = "IDArticle";
-    private static final String TITLE = "Title";
-    private static final String LINK = "Link";
-    private static final String DESCRIPTION = "Description";
-    private static final String PICTURE_PATH = "PicturePath";
-    private static final String PUBLISHED_DATE = "PublishedDate";
-
-    private static final String CREATE_ARTICLE = "{ CALL createArticle (?,?,?,?,?,?) }";
-    private static final String UPDATE_ARTICLE = "{ CALL updateArticle (?,?,?,?,?,?) }";
-    private static final String DELETE_ARTICLE = "{ CALL deleteArticle (?) }";
-    private static final String SELECT_ARTICLE = "{ CALL selectArticle (?) }";
-    private static final String SELECT_ARTICLES = "{ CALL selectArticles }";
-
-    @Override
-    public int createArticle(Article article) throws Exception {
-        DataSource dataSource = DataSourceSingleton.getInstance();
-        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(CREATE_ARTICLE)) {
-
-            stmt.setString(TITLE, article.getTitle());
-            stmt.setString(LINK, article.getLink());
-            stmt.setString(DESCRIPTION, article.getDescription());
-            stmt.setString(PICTURE_PATH, article.getPicturePath());
-            stmt.setString(PUBLISHED_DATE,
-                    article.getPublishedDate().format(Article.DATE_FORMATTER));
-
-            stmt.registerOutParameter(ID_ARTICLE, Types.INTEGER);
-
-            stmt.executeUpdate();
-            return stmt.getInt(ID_ARTICLE);
-        }
-
-    }
-
-    @Override
-    public void createArticles(List<Article> articles) throws Exception {
-        DataSource dataSource = DataSourceSingleton.getInstance();
-        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(CREATE_ARTICLE)) {
-
-            for (Article article : articles) {
-
-                stmt.setString(TITLE, article.getTitle());
-                stmt.setString(LINK, article.getLink());
-                stmt.setString(DESCRIPTION, article.getDescription());
-                stmt.setString(PICTURE_PATH, article.getPicturePath());
-                stmt.setString(PUBLISHED_DATE,
-                        article.getPublishedDate().format(Article.DATE_FORMATTER));
-
-                stmt.registerOutParameter(ID_ARTICLE, Types.INTEGER);
-
-                stmt.executeUpdate();
-            }
-        }
-
-    }
-
-    @Override
-    public void updateArticle(int id, Article article) throws Exception {
-
-        DataSource dataSource = DataSourceSingleton.getInstance();
-        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(UPDATE_ARTICLE)) {
-
-            stmt.setString(TITLE, article.getTitle());
-            stmt.setString(LINK, article.getLink());
-            stmt.setString(DESCRIPTION, article.getDescription());
-            stmt.setString(PICTURE_PATH, article.getPicturePath());
-            stmt.setString(PUBLISHED_DATE,
-                    article.getPublishedDate().format(Article.DATE_FORMATTER));
-
-            stmt.setInt(ID_ARTICLE, id);
-
-            stmt.executeUpdate();
-        }
-
-    }
-
-    @Override
-    public void deleteArticle(int id) throws Exception {
-
-        DataSource dataSource = DataSourceSingleton.getInstance();
-        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(DELETE_ARTICLE)) {
-
-            stmt.setInt(ID_ARTICLE, id);
-
-            stmt.executeUpdate();
-        }
-
-    }
-
-    @Override
-    public Optional<Article> selectArticle(int id) throws Exception {
-
-        DataSource dataSource = DataSourceSingleton.getInstance();
-        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(SELECT_ARTICLE)) {
-
-            stmt.setInt(ID_ARTICLE, id);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return Optional.of(
-                            new Article(
-                                    rs.getInt(ID_ARTICLE),
-                                    rs.getString(TITLE),
-                                    rs.getString(LINK),
-                                    rs.getString(DESCRIPTION),
-                                    rs.getString(PICTURE_PATH),
-                                    LocalDateTime.parse(
-                                            rs.getString(PUBLISHED_DATE),
-                                            Article.DATE_FORMATTER))
-                    );
-                }
-            }
-
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    public List<Article> selectArticles() throws Exception {
-
-        List<Article> articles = new ArrayList<>();
-
-        DataSource dataSource = DataSourceSingleton.getInstance();
-        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(SELECT_ARTICLES)) {
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    articles.add(
-                            new Article(
-                                    rs.getInt(ID_ARTICLE),
-                                    rs.getString(TITLE),
-                                    rs.getString(LINK),
-                                    rs.getString(DESCRIPTION),
-                                    rs.getString(PICTURE_PATH),
-                                    LocalDateTime.parse(
-                                            rs.getString(PUBLISHED_DATE),
-                                            Article.DATE_FORMATTER))
-                    );
-                }
-            }
-
-        }
-
-        return articles;
-
-    }
-
+//TODO remove after implementing create Patches 
+//    @Override
+//    public void createArticles(List<Article> articles) throws Exception {
+//        DataSource dataSource = DataSourceSingleton.getInstance();
+//        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(CREATE_ARTICLE)) {
+//
+//            for (Article article : articles) {
+//
+//                stmt.setString(TITLE, article.getTitle());
+//                stmt.setString(LINK, article.getLink());
+//                stmt.setString(DESCRIPTION, article.getDescription());
+//                stmt.setString(PICTURE_PATH, article.getPicturePath());
+//                stmt.setString(PUBLISHED_DATE,
+//                        article.getPublishedDate().format(Article.DATE_FORMATTER));
+//
+//                stmt.registerOutParameter(ID_ARTICLE, Types.INTEGER);
+//
+//                stmt.executeUpdate();
+//            }
+//        }
+//
+//    }
     //Game 
     private static final String ID_STEAM_GAME = "idSteamGame";
-    private static final String TITLE = "title";
+    private static final String NAME = "name";
     private static final String STEAM_URL = "steamURL";
     private static final String PICTURE_URL = "pictureURL";
 
@@ -183,32 +59,93 @@ public class SqlRepository implements Repository {
     @Override
 
     public int createGame(Game game) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(CREATE_GAME)) {
+
+            stmt.setInt(ID_STEAM_GAME, game.idSteamGame);
+            stmt.setString(NAME, game.name);
+            stmt.setString(PICTURE_URL, game.pictureURL);
+            stmt.setString(STEAM_URL, game.steamURL);
+
+//TODO check what is out parametar look at bele script
+            stmt.registerOutParameter(ID_STEAM_GAME, Types.INTEGER);
+
+            stmt.executeUpdate();
+            return stmt.getInt(ID_STEAM_GAME);
+        }
     }
 
     @Override
     public void updateGame(int id, Game game) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(UPDATE_GAME)) {
+
+            stmt.setInt(ID_STEAM_GAME, game.idSteamGame);
+            stmt.setString(NAME, game.name);
+            stmt.setString(PICTURE_URL, game.pictureURL);
+            stmt.setString(STEAM_URL, game.steamURL);
+
+            stmt.executeUpdate();
+        }
     }
 
     @Override
     public void deleteGame(int id) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(UPDATE_GAME)) {
+            stmt.setInt(ID_STEAM_GAME, id);
+
+            stmt.executeUpdate();
+        }
     }
 
     @Override
     public Optional<Game> getGame(int id) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(GET_GAME)) {
+
+            stmt.setInt(ID_STEAM_GAME, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(new Game(
+                            stmt.getInt(ID_STEAM_GAME),
+                            stmt.getString(NAME),
+                            stmt.getString(PICTURE_URL),
+                            stmt.getString(STEAM_URL)
+                    ));
+                }
+            }
+
+            stmt.executeUpdate();
+        }
+        return Optional.empty();
     }
 
     @Override
     public List<Game> getGames() throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        List<Game> games = new ArrayList<>();
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(GET_GAMES)) {
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    games.add(new Game(
+                            stmt.getInt(ID_STEAM_GAME),
+                            stmt.getString(NAME),
+                            stmt.getString(PICTURE_URL),
+                            stmt.getString(STEAM_URL)
+                    ));
+                }
+            }
+
+            stmt.executeUpdate();
+        }
+        return games;
     }
 
     //Author
     private static final String ID_AUTHOR = "idAuthor";
-    private static final String NAME = "name";
+//    private static final String NAME = "name";
 
     private static final String CREATE_AUTHOR = "{ CALL CreateAuthor (?) }";
     private static final String UPDATE_AUTHOR = "{ CALL UpdateAuthor (?,?) }";
