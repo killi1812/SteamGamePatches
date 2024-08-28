@@ -156,6 +156,13 @@ BEGIN
     SELECT * FROM Patches WHERE IdPatch = @IdPatch
 END;
 
+CREATE OR ALTER PROC ReadPatches
+    @IdPatch INT
+AS
+BEGIN
+    SELECT * FROM Patches
+END;
+
 -- Create Game
 CREATE OR ALTER PROC CreateGame
     @idSteamGame INT,
@@ -177,6 +184,11 @@ BEGIN
     SELECT * FROM Games WHERE idSteamGame = @idSteamGame
 END;
 
+CREATE OR ALTER PROC ReadGames
+AS
+BEGIN
+    SELECT * FROM Games
+END;
 
 -- Update Game
 CREATE OR ALTER PROC UpdateGame
