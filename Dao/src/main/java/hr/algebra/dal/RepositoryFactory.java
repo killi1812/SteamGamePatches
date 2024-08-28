@@ -9,7 +9,7 @@ import java.util.Properties;
 
 /**
  *
- * @author lecturerf6
+ * @author fran
  */
 public class RepositoryFactory {
     

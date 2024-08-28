@@ -68,10 +68,9 @@ public class SqlRepository implements Repository {
             stmt.setString(STEAM_URL, game.steamURL);
 
 //TODO check what is out parametar look at bele script
-            stmt.registerOutParameter(ID_STEAM_GAME, Types.INTEGER);
-
+//            stmt.registerOutParameter(ID_STEAM_GAME, Types.INTEGER);
             stmt.executeUpdate();
-            return stmt.getInt(ID_STEAM_GAME);
+            return game.idSteamGame;
         }
     }
 
@@ -92,7 +91,7 @@ public class SqlRepository implements Repository {
     @Override
     public void deleteGame(int id) throws Exception {
         DataSource dataSource = DataSourceSingleton.getInstance();
-        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(UPDATE_GAME)) {
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(DELETE_GAME)) {
             stmt.setInt(ID_STEAM_GAME, id);
 
             stmt.executeUpdate();
@@ -103,20 +102,19 @@ public class SqlRepository implements Repository {
     public Optional<Game> getGame(int id) throws Exception {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(GET_GAME)) {
-
             stmt.setInt(ID_STEAM_GAME, id);
+
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return Optional.of(new Game(
-                            stmt.getInt(ID_STEAM_GAME),
-                            stmt.getString(NAME),
-                            stmt.getString(PICTURE_URL),
-                            stmt.getString(STEAM_URL)
+                            rs.getInt(ID_STEAM_GAME),
+                            rs.getString(NAME),
+                            rs.getString(PICTURE_URL),
+                            rs.getString(STEAM_URL)
                     ));
                 }
             }
 
-            stmt.executeUpdate();
         }
         return Optional.empty();
     }
@@ -128,17 +126,15 @@ public class SqlRepository implements Repository {
         try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(GET_GAMES)) {
 
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
+                while (rs.next()) {
                     games.add(new Game(
-                            stmt.getInt(ID_STEAM_GAME),
-                            stmt.getString(NAME),
-                            stmt.getString(PICTURE_URL),
-                            stmt.getString(STEAM_URL)
+                            rs.getInt(ID_STEAM_GAME),
+                            rs.getString(NAME),
+                            rs.getString(PICTURE_URL),
+                            rs.getString(STEAM_URL)
                     ));
                 }
             }
-
-            stmt.executeUpdate();
         }
         return games;
     }

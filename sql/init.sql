@@ -46,7 +46,7 @@ create table Patches(
 -- Users CRUD Procedures
 
 -- Create User
-CREATE OR ALTER PROC CreateUser
+CREATE OR ALTER PROCEDURE CreateUser
     @username NVARCHAR(255),
     @password NVARCHAR(255),
     @isAdmin BIT
@@ -58,7 +58,7 @@ END;
 
 
 -- Read User
-CREATE OR ALTER PROC ReadUser
+CREATE OR ALTER PROCEDURE ReadUser
     @idUser INT
 AS
 BEGIN
@@ -67,7 +67,7 @@ END;
 
 
 -- Update User
-CREATE OR ALTER PROC UpdateUser
+CREATE OR ALTER PROCEDURE UpdateUser
     @idUser INT,
     @username NVARCHAR(255),
     @password NVARCHAR(255),
@@ -81,7 +81,7 @@ END;
 
 
 -- Delete User
-CREATE OR ALTER PROC DeleteUser
+CREATE OR ALTER PROCEDURE DeleteUser
     @idUser INT
 AS
 BEGIN
@@ -92,7 +92,7 @@ END;
 -- Authors CRUD Procedures
 
 -- Create Author
-CREATE OR ALTER PROC CreateAuthor
+CREATE OR ALTER PROCEDURE CreateAuthor
     @name NVARCHAR(255)
 AS
 BEGIN
@@ -102,7 +102,7 @@ END;
 
 
 -- Read Author
-CREATE OR ALTER PROC ReadAuthor
+CREATE OR ALTER PROCEDURE ReadAuthor
     @idAuthor INT
 AS
 BEGIN
@@ -111,7 +111,7 @@ END;
 
 
 -- Update Author
-CREATE OR ALTER PROC UpdateAuthor
+CREATE OR ALTER PROCEDURE UpdateAuthor
     @idAuthor INT,
     @name NVARCHAR(255)
 AS
@@ -123,7 +123,7 @@ END;
 
 
 -- Delete Author
-CREATE OR ALTER PROC DeleteAuthor
+CREATE OR ALTER PROCEDURE DeleteAuthor
     @idAuthor INT
 AS
 BEGIN
@@ -134,7 +134,7 @@ END;
 -- Patches CRUD Procedures
 
 -- Create Patch
-CREATE OR ALTER PROC CreatePatch
+CREATE OR ALTER PROCEDURE CreatePatch
     @title NVARCHAR(255),
     @description NVARCHAR(455),
     @link NVARCHAR(255),
@@ -149,14 +149,14 @@ END;
 
 
 -- Read Patch
-CREATE OR ALTER PROC ReadPatch
+CREATE OR ALTER PROCEDURE ReadPatch
     @IdPatch INT
 AS
 BEGIN
     SELECT * FROM Patches WHERE IdPatch = @IdPatch
 END;
 
-CREATE OR ALTER PROC ReadPatches
+CREATE OR ALTER PROCEDURE ReadPatches
     @IdPatch INT
 AS
 BEGIN
@@ -164,7 +164,7 @@ BEGIN
 END;
 
 -- Create Game
-CREATE OR ALTER PROC CreateGame
+CREATE OR ALTER PROCEDURE CreateGame
     @idSteamGame INT,
     @name NVARCHAR(255),
     @pictureURL NVARCHAR(255) = NULL,
@@ -177,21 +177,21 @@ END;
 
 
 -- Read Game
-CREATE OR ALTER PROC ReadGame
+CREATE OR ALTER PROCEDURE ReadGame
     @idSteamGame INT
 AS
 BEGIN
     SELECT * FROM Games WHERE idSteamGame = @idSteamGame
 END;
 
-CREATE OR ALTER PROC ReadGames
+CREATE OR ALTER PROCEDURE ReadGames
 AS
 BEGIN
     SELECT * FROM Games
 END;
 
 -- Update Game
-CREATE OR ALTER PROC UpdateGame
+CREATE OR ALTER PROCEDURE UpdateGame
     @idGame INT,
     @idSteamGame INT,
     @name NVARCHAR(255),
@@ -207,7 +207,7 @@ END;
 
 
 -- Delete Game
-CREATE OR ALTER PROC DeleteGame
+CREATE OR ALTER PROCEDURE DeleteGame
     @idSteamGame INT
 AS
 BEGIN
@@ -218,7 +218,7 @@ END;
 -- Users CRUD Procedures
 
 -- Create User
-CREATE OR ALTER PROC CreateUser
+CREATE OR ALTER PROCEDURE CreateUser
     @username NVARCHAR(255),
     @password NVARCHAR(255),
     @isAdmin BIT
@@ -230,7 +230,7 @@ END;
 
 
 -- Read User
-CREATE OR ALTER PROC ReadUser
+CREATE OR ALTER PROCEDURE ReadUser
     @idUser INT
 AS
 BEGIN
@@ -239,7 +239,7 @@ END;
 
 
 -- Update User
-CREATE OR ALTER PROC UpdateUser
+CREATE OR ALTER PROCEDURE UpdateUser
     @idUser INT,
     @username NVARCHAR(255),
     @password NVARCHAR(255),
@@ -253,7 +253,7 @@ END;
 
 
 -- Delete User
-CREATE OR ALTER PROC DeleteUser
+CREATE OR ALTER PROCEDURE DeleteUser
     @idUser INT
 AS
 BEGIN
@@ -264,7 +264,7 @@ END;
 -- Authors CRUD Procedures
 
 -- Create Author
-CREATE OR ALTER PROC CreateAuthor
+CREATE OR ALTER PROCEDURE CreateAuthor
     @name NVARCHAR(255)
 AS
 BEGIN
@@ -274,7 +274,7 @@ END;
 
 
 -- Read Author
-CREATE OR ALTER PROC ReadAuthor
+CREATE OR ALTER PROCEDURE ReadAuthor
     @idAuthor INT
 AS
 BEGIN
@@ -283,7 +283,7 @@ END;
 
 
 -- Update Author
-CREATE OR ALTER PROC UpdateAuthor
+CREATE OR ALTER PROCEDURE UpdateAuthor
     @idAuthor INT,
     @name NVARCHAR(255)
 AS
@@ -295,7 +295,7 @@ END;
 
 
 -- Delete Author
-CREATE OR ALTER PROC DeleteAuthor
+CREATE OR ALTER PROCEDURE DeleteAuthor
     @idAuthor INT
 AS
 BEGIN
@@ -306,7 +306,7 @@ END;
 -- Patches CRUD Procedures
 
 -- Create Patch
-CREATE OR ALTER PROC CreatePatch
+CREATE OR ALTER PROCEDURE CreatePatch
     @title NVARCHAR(255),
     @description NVARCHAR(455),
     @link NVARCHAR(255),
@@ -321,7 +321,7 @@ END;
 
 
 -- Read Patch
-CREATE OR ALTER PROC ReadPatch
+CREATE OR ALTER PROCEDURE ReadPatch
     @IdPatch INT
 AS
 BEGIN
@@ -330,7 +330,7 @@ END;
 
 
 -- Update Patch
-CREATE OR ALTER PROC UpdatePatch
+CREATE OR ALTER PROCEDURE UpdatePatch
     @IdPatch INT,
     @title NVARCHAR(255),
     @description NVARCHAR(455),
@@ -347,7 +347,7 @@ END;
 
 
 -- Delete Patch
-CREATE OR ALTER PROC DeletePatch
+CREATE OR ALTER PROCEDURE DeletePatch
     @IdPatch INT
 AS
 BEGIN
@@ -368,7 +368,7 @@ END;
 
 
 -- Delete Patch
-CREATE OR ALTER PROC DeletePatch
+CREATE OR ALTER PROCEDURE DeletePatch
     @IdPatch INT
 AS
 BEGIN
@@ -410,6 +410,10 @@ exec createPatch
 @gameId = 1286580
 ;
 
+
+exec ReadGames
+GRANT EXECUTE TO [sa]
+CALL ReadGames
 
 Select * from games as g
 inner join patches as p

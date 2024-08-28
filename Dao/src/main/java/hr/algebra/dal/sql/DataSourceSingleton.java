@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 
 /**
  *
- * @author dbele
+ * @author fran
  */
 public final class DataSourceSingleton {
 
@@ -24,6 +24,7 @@ public final class DataSourceSingleton {
     private static final String DATABASE_NAME = "DATABASE_NAME";
     private static final String USER = "USER";
     private static final String PASSWORD = "PASSWORD";
+    private static final String ENCRYPT = "False";
 
     static {
         try (InputStream is = DataSourceSingleton.class.getResourceAsStream(PATH)) {
@@ -51,6 +52,8 @@ public final class DataSourceSingleton {
         dataSource.setDatabaseName(PROPERTIES.getProperty(DATABASE_NAME));
         dataSource.setUser(PROPERTIES.getProperty(USER));
         dataSource.setPassword(PROPERTIES.getProperty(PASSWORD));
+        dataSource.setEncrypt(false);
+        dataSource.setPortNumber(1433);
         return dataSource;
     }
 }
