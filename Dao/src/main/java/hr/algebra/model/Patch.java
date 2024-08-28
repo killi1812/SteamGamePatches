@@ -10,7 +10,7 @@ import java.util.Date;
  *
  * @author fran
  */
-public class Patches {
+public class Patch {
 
     public int idPatch;
     public String title;
