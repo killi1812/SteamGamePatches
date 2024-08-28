@@ -47,7 +47,5 @@ public class Test {
         } catch (Exception e) {
             System.out.println(e);
         }
-
-        System.out.println("Hello World!");
     }
 }

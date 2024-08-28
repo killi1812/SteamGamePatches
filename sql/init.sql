@@ -412,8 +412,6 @@ exec createPatch
 
 
 exec ReadGames
-GRANT EXECUTE TO [sa]
-CALL ReadGames
 
 Select * from games as g
 inner join patches as p
