@@ -218,7 +218,7 @@ public class SqlRepository implements Repository {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(GET_AUTHORS)) {
             try (var rs = stmt.executeQuery()) {
-                if (rs.next()) {
+                while (rs.next()) {
                     authors.add(new Author(rs.getInt(ID_AUTHOR), rs.getString(NAME)));
                     
                 }
@@ -392,7 +392,7 @@ public class SqlRepository implements Repository {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(GET_PATCHES)) {
             try (var rs = stmt.executeQuery();) {
-                if (rs.next()) {
+                while (rs.next()) {
                     patches.add(new Patch(
                             rs.getInt(ID_PATCH),
                             rs.getString(TITLE),

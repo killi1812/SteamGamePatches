@@ -273,11 +273,12 @@ END;
 -- Create Author
 CREATE OR ALTER PROCEDURE CreateAuthor
     @name NVARCHAR(255),
-    @IdAuthor INT OUT
+    @idAuthor INT OUT
 AS
 BEGIN
     INSERT INTO Authors ([name])
     VALUES (@name)
+    set @idAuthor = scope_identity()
 END;
 
 
@@ -438,15 +439,25 @@ exec ReadGames
 
 Select * from games as g
 inner join patches as p
-on g.idSteamGame = p.gameId;
+on g.idSteamGame = p.gameId
+inner join authors as a
+on p.authorId = a.idAuthor;
+
 
 select * from authors
+
+-- exec deleteAuthor @idAuthor =1 
 
 -- select * from patches
 
 -- exec deleteGame @idSteamGame = 1286580
-
+-- -- 
 -- drop table Users
 -- drop table Patches
 -- drop table Authors;
 -- drop table Games
+delete from Users
+delete from Patches;
+delete from authors;
+delete from games;
+

@@ -25,6 +25,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import org.jsoup.Jsoup;
 
 /**
  *
@@ -67,6 +68,7 @@ public class GamePatchParser {
 
             Patch patch = null;
             StartElement startElement = null;
+            StringBuilder desc = null;
             Optional<TagType> tagType = Optional.empty();
 
             while (reader.hasNext()) {
@@ -85,6 +87,9 @@ public class GamePatchParser {
                         if (tagType.isPresent() && tagType.get().equals(TagType.IMAGE)) {
                             game = new Game();
                             game.idSteamGame = idGame;
+                        }
+                        if (tagType.isPresent() && tagType.get().equals(TagType.DESCRIPTION)) {
+                            desc = new StringBuilder();
                         }
                     }
                     //TODO see for parsing a game
@@ -105,8 +110,13 @@ public class GamePatchParser {
                                     if (data.isEmpty()) {
                                         break;
                                     }
+                                    desc.append(data);
+                                    //Variant that removes html could be used
+                                    //var html = Jsoup.parse(desc.toString());
+                                    //patch.description = html.text();
                                     //TODO check what is up with desc hard time parsing html
-                                    patch.description = data;
+
+                                    patch.description = desc.toString();
                                     break;
                                 case LINK:
                                     if (data.isEmpty()) {
@@ -129,7 +139,7 @@ public class GamePatchParser {
                                     }
 
                                     Author author = repo.getAuthors().stream()
-                                            .filter(a -> a.name == data)
+                                            .filter(a -> a.name.equals(data))
                                             .findFirst()
                                             .orElse(null);
 

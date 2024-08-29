@@ -6,6 +6,7 @@ package hr.algebra.test;
 import hr.algebra.dal.RepositoryFactory;
 import hr.algebra.factory.UrlConnectionFactory;
 import hr.algebra.model.Game;
+import hr.algebra.parser.GamePatchParser;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -14,9 +15,9 @@ import java.util.List;
  * @author fran
  */
 public class Test {
-
+    
     public static void main(String[] args) {
-
+        
         var repo = RepositoryFactory.getInstance();
 //
 //        try {
@@ -47,13 +48,18 @@ public class Test {
             System.out.println(e);
         }
 
+//        try {
+//            var conn = UrlConnectionFactory.getHttpUrlConnection(914710);
+//            var rez = new String(conn.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+//            System.out.println(rez);
+//        } catch (Exception e) {
+//            System.out.println(e);
+//
+//        }
         try {
-            var conn = UrlConnectionFactory.getHttpUrlConnection(914710);
-            var rez = new String(conn.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-            System.out.println(rez);
+            GamePatchParser.parse(394360);
         } catch (Exception e) {
             System.out.println(e);
-
         }
     }
 }
