@@ -12,7 +12,7 @@ import javax.xml.stream.XMLStreamException;
 
 /**
  *
- * @author dnlbe
+ * @author fran
  */
 public class ParserFactory {
 

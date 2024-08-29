@@ -14,7 +14,7 @@ import javax.swing.ImageIcon;
 
 /**
  *
- * @author dnlbe
+ * @author fran
  */
 public class IconUtils {
     

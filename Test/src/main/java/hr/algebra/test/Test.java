@@ -4,7 +4,9 @@
 package hr.algebra.test;
 
 import hr.algebra.dal.RepositoryFactory;
+import hr.algebra.factory.UrlConnectionFactory;
 import hr.algebra.model.Game;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -24,13 +26,12 @@ public class Test {
 //        }
 
 //        try {
-//            Game g = new Game(1, "Cat Quest II", "https://store.steampowered.com/app/914710/Cat_Quest_II/", "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/914710/capsule_231x87.jpg?t=1708441428");
+//            Game g = new Game(914710, "Cat Quest II", "https://store.steampowered.com/app/914710/Cat_Quest_II/", "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/914710/capsule_231x87.jpg?t=1708441428");
 //            repo.createGame(g);
 //
 //        } catch (Exception e) {
 //            System.out.println(e);
 //        }
-
 //        try {
 //            var g = repo.getGame(1286580);
 //            if (!g.isEmpty()) {
@@ -39,13 +40,20 @@ public class Test {
 //        } catch (Exception e) {
 //            System.out.println(e);
 //        }
-
-
         try {
             List<Game> games = repo.getGames();
             games.forEach(g -> System.out.println(g.name));
         } catch (Exception e) {
             System.out.println(e);
+        }
+
+        try {
+            var conn = UrlConnectionFactory.getHttpUrlConnection(914710);
+            var rez = new String(conn.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            System.out.println(rez);
+        } catch (Exception e) {
+            System.out.println(e);
+
         }
     }
 }

@@ -12,7 +12,7 @@ import java.net.URL;
 
 /**
  *
- * @author dnlbe
+ * @author fran
  */
 public class UrlConnectionFactory {
 
@@ -20,12 +20,13 @@ public class UrlConnectionFactory {
     private static final String REQUEST_METHOD = "GET";
     private static final String USER_AGENT = "User-Agent";
     private static final String MOZILLA = "Mozilla/5.0";
+    private static final String PATH = "https://steamcommunity.com/games/%s/rss/";
 
     private UrlConnectionFactory() {
     }
 
-    public static HttpURLConnection getHttpUrlConnection(String path) throws MalformedURLException, IOException {
-        URL url = new URL(path);
+    public static HttpURLConnection getHttpUrlConnection(int IdGame) throws MalformedURLException, IOException {
+        URL url = new URL(String.format(PATH, IdGame));
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setConnectTimeout(TIMEOUT);
         con.setReadTimeout(TIMEOUT);
