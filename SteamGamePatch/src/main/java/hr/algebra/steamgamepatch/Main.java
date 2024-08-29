@@ -4,7 +4,7 @@
  */
 package hr.algebra.steamgamepatch;
 
-import parser.GamePatchParser;
+import hr.algebra.parser.GamePatchParser;
 
 /**
  *
