@@ -143,7 +143,7 @@ public class SqlRepository implements Repository {
     private static final String ID_AUTHOR = "idAuthor";
 //    private static final String NAME = "name";
 
-    private static final String CREATE_AUTHOR = "{ CALL CreateAuthor (?) }";
+    private static final String CREATE_AUTHOR = "{ CALL CreateAuthor (?,?) }";
     private static final String UPDATE_AUTHOR = "{ CALL UpdateAuthor (?,?) }";
     private static final String DELETE_AUTHOR = "{ CALL DeleteAuthor (?) }";
     private static final String GET_AUTHOR = "{ CALL ReadAuthor (?) }";
@@ -156,6 +156,7 @@ public class SqlRepository implements Repository {
 
             stmt.setString(NAME, author.name);
             stmt.registerOutParameter(ID_AUTHOR, Types.INTEGER);
+            
             stmt.executeUpdate();
             return stmt.getInt(ID_AUTHOR);
         }
@@ -167,6 +168,7 @@ public class SqlRepository implements Repository {
         try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(UPDATE_AUTHOR)) {
             stmt.setInt(ID_AUTHOR, id);
             stmt.setString(NAME, author.name);
+            
             stmt.executeUpdate();
         }
     }
@@ -176,6 +178,7 @@ public class SqlRepository implements Repository {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(DELETE_AUTHOR)) {
             stmt.setInt(ID_AUTHOR, id);
+            
             stmt.executeUpdate();
         }
     }
@@ -206,7 +209,7 @@ public class SqlRepository implements Repository {
     private static final String PASSWORD = "password";
     private static final String IS_ADMIN = "isAdmin";
 
-    private static final String CREATE_USER = "{ CALL CreateUser (?,?,?) }";
+    private static final String CREATE_USER = "{ CALL CreateUser (?,?,?,?) }";
     private static final String UPDATE_USER = "{ CALL UpdateUser (?,?,?,?) }";
     private static final String DELETE_USER = "{ CALL DeleteUser (?) }";
     private static final String GET_USER = "{ CALL ReadUser (?) }";
@@ -254,7 +257,7 @@ public class SqlRepository implements Repository {
     @Override
     public Optional<User> getUser(int id) throws Exception {
         DataSource dataSource = DataSourceSingleton.getInstance();
-        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(DELETE_USER)) {
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(GET_USER)) {
 
             stmt.setInt(ID_USER, id);
             try (var rs = stmt.executeQuery()) {
@@ -284,7 +287,7 @@ public class SqlRepository implements Repository {
     private static final String AUTHOR_ID = "authorId";
     private static final String GAME_ID = "gameId";
 
-    private static final String CREATE_PATCH = "{ CALL CreatePatch (?,?,?,?,?,?) }";
+    private static final String CREATE_PATCH = "{ CALL CreatePatch (?,?,?,?,?,?,?) }";
     private static final String UPDATE_PATCH = "{ CALL UpdatePatch (?,?,?,?,?,?,?) }";
     private static final String DELETE_PATCH = "{ CALL DeletePatch (?) }";
     private static final String GET_PATCH = "{ CALL ReadPatch (?) }";

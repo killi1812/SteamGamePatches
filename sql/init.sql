@@ -41,19 +41,19 @@ create table Patches(
     foreign key references Games(idSteamGame),
 );
 
--- Games CRUD Procedures
-
 -- Users CRUD Procedures
 
 -- Create User
 CREATE OR ALTER PROCEDURE CreateUser
     @username NVARCHAR(255),
     @password NVARCHAR(255),
-    @isAdmin BIT
+    @isAdmin BIT,
+    @idUser INT OUTPUT
 AS
 BEGIN
     INSERT INTO [Users] (username, [password], isAdmin)
     VALUES (@username, @password, @isAdmin)
+    set @idUser = Scope_Identity()
 END;
 
 
@@ -93,11 +93,13 @@ END;
 
 -- Create Author
 CREATE OR ALTER PROCEDURE CreateAuthor
-    @name NVARCHAR(255)
+    @name NVARCHAR(255),
+    @idAuthor INT OUTPUT
 AS
 BEGIN
     INSERT INTO Authors ([name])
     VALUES (@name)
+    set @idAuthor = Scope_Identity()
 END;
 
 
@@ -140,11 +142,13 @@ CREATE OR ALTER PROCEDURE CreatePatch
     @link NVARCHAR(255),
     @pubDate DATETIME,
     @authorId INT,
-    @gameId INT
+    @gameId INT,
+    @idPatch INT OUTPUT
 AS
 BEGIN
     INSERT INTO Patches (title, description, [link], pubDate, authorId, gameId)
     VALUES (@title, @description, @link, @pubDate, @authorId, @gameId)
+    set @idPatch = Scope_Identity()
 END;
 
 
@@ -222,11 +226,13 @@ CREATE OR ALTER PROCEDURE CreateUser
     @username NVARCHAR(255),
     @password NVARCHAR(255),
     @isAdmin BIT,
-    @idUser INT OUT
+    @idUser INT OUTPUT
 AS
 BEGIN
     INSERT INTO [Users] (username, [password], isAdmin)
     VALUES (@username, @password, @isAdmin)
+
+    set @idUser = Scope_Identity()
 END;
 
 
@@ -314,11 +320,13 @@ CREATE OR ALTER PROCEDURE CreatePatch
     @link NVARCHAR(255),
     @pubDate DATETIME,
     @authorId INT,
-    @gameId INT
+    @gameId INT,
+    @idPatch INT OUTPUT
 AS
 BEGIN
     INSERT INTO Patches (title, description, [link], pubDate, authorId, gameId)
     VALUES (@title, @description, @link, @pubDate, @authorId, @gameId)
+    set @idPatch = Scope_Identity()
 END;
 
 
@@ -378,14 +386,18 @@ BEGIN
 END;
 
 -- sead data
+--TODO check if it works
 exec createGame 
 @idSteamGame = 1286580,
 @name = 'Ship of Fools',
 @pictureURL = 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1286580/capsule_231x87.jpg?t=1717445504',
 @steamURL = 'https://steamcommunity.com/games/1286580' 
 
+Declare @id INT
+
 exec createAuthor
-@name = 'hubgod'
+@name = 'hubgod',
+@idAuthor = @id
 
 declare @d datetime
 set @d = CONVERT(DATETIME, '2024-05-21T18:00:25', 126)
@@ -395,11 +407,13 @@ exec createPatch
 @link = 'https://steamcommunity.com/games/1286580/announcements/detail/4166470501218500057',
 @pubDate = @d,
 @authorId = @@identity,
-@gameId = 1286580
-;
+@gameId = 1286580,
+@idGame = @id
+
 
 exec createAuthor
-@name = 'Multi Graine'
+@name = 'Multi Graine',
+@idAuthor = @id
 
 declare @d datetime
 set @d = CONVERT(DATETIME, '2024-06-04T13:25:32', 126)
@@ -409,7 +423,8 @@ exec createPatch
 @link = 'https://steamcommunity.com/games/1286580/announcements/detail/4145079671533080023',
 @pubDate = @d,
 @authorId = @@identity,
-@gameId = 1286580
+@gameId = 1286580,
+@idGame = @id
 ;
 
 
