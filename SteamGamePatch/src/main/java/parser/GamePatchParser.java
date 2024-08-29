@@ -15,6 +15,7 @@ import hr.algebra.utilities.FileUtils;
 import java.util.List;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,7 +55,6 @@ public class GamePatchParser {
 
     public static void parse(int idGame) throws IOException, XMLSignatureException, Exception {
         Game game = null;
-        List<Author> authors = new ArrayList<>();
         List<Patch> patches = new ArrayList<>();
 
         repo = RepositoryFactory.getInstance();
@@ -79,6 +79,7 @@ public class GamePatchParser {
 
                         if (tagType.isPresent() && tagType.get().equals(TagType.ITEM)) {
                             patch = new Patch();
+                            patch.gameId = idGame;
                             patches.add(patch);
                         }
                         if (tagType.isPresent() && tagType.get().equals(TagType.IMAGE)) {
@@ -90,20 +91,44 @@ public class GamePatchParser {
                     case XMLStreamConstants.CHARACTERS -> {
                         if (tagType.isPresent() && patch != null) {
                             String data = event.asCharacters().getData().trim();
-
                             switch (tagType.get()) {
                                 case IMAGE:
                                     //TODO pars game
                                     break;
                                 case TITLE:
+                                    if (data.isEmpty()) {
+                                        break;
+
+                                    }
+                                    patch.title = data;
                                     break;
+
                                 case DESCRIPTION:
+                                    //Check when parsing html
+                                    if (data.isEmpty()) {
+                                        break;
+                                    }
+                                    patch.description = data;
                                     break;
                                 case LINK:
+                                    if (data.isEmpty()) {
+                                        break;
+                                    }
+                                    patch.link = data;
                                     break;
                                 case PUBDATE:
+                                    if (data.isEmpty()) {
+                                        break;
+                                    }
+                                    //TODO pars date Thu, 08 Aug 2024 12:04:49 +0000
                                     break;
                                 case AUTHOR:
+                                    if (data.isEmpty()) {
+                                        break;
+                                    }
+                                    Author a = new Author(data);
+                                    var id = repo.createAuthor(a);
+                                    patch.authorId = id;
                                     break;
                                 default:
                                     break;
@@ -115,7 +140,6 @@ public class GamePatchParser {
         }
 
         repo.createGame(game);
-        repo.createAuthors(authors);
         repo.createPatches(patches);
     }
 
