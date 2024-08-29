@@ -289,6 +289,12 @@ BEGIN
     SELECT * FROM Authors WHERE idAuthor = @idAuthor
 END;
 
+CREATE OR ALTER PROCEDURE ReadAuthors
+AS
+BEGIN
+    SELECT * FROM Authors
+END;
+
 
 -- Update Author
 CREATE OR ALTER PROCEDURE UpdateAuthor
@@ -433,6 +439,8 @@ exec ReadGames
 Select * from games as g
 inner join patches as p
 on g.idSteamGame = p.gameId;
+
+select * from authors
 
 -- select * from patches
 

@@ -16,6 +16,7 @@ import java.util.List;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
@@ -64,7 +65,6 @@ public class GamePatchParser {
         try (var is = con.getInputStream();) {
             var reader = ParserFactory.createStaxParser(is);
 
-            Author author = null;
             Patch patch = null;
             StartElement startElement = null;
             Optional<TagType> tagType = Optional.empty();
@@ -76,7 +76,7 @@ public class GamePatchParser {
                     case XMLStreamConstants.START_ELEMENT -> {
                         startElement = event.asStartElement();
                         String xName = startElement.getName().getLocalPart();
-
+                        tagType = TagType.from(xName);
                         if (tagType.isPresent() && tagType.get().equals(TagType.ITEM)) {
                             patch = new Patch();
                             patch.gameId = idGame;
@@ -89,25 +89,23 @@ public class GamePatchParser {
                     }
                     //TODO see for parsing a game
                     case XMLStreamConstants.CHARACTERS -> {
-                        if (tagType.isPresent() && patch != null) {
+                        if (!tagType.isPresent()) {
+                            break;
+                        }
+                        if (patch != null) {
                             String data = event.asCharacters().getData().trim();
                             switch (tagType.get()) {
-                                case IMAGE:
-                                    //TODO pars game
-                                    break;
                                 case TITLE:
                                     if (data.isEmpty()) {
                                         break;
-
                                     }
                                     patch.title = data;
                                     break;
-
                                 case DESCRIPTION:
-                                    //Check when parsing html
                                     if (data.isEmpty()) {
                                         break;
                                     }
+                                    //TODO check what is up with desc hard time parsing html
                                     patch.description = data;
                                     break;
                                 case LINK:
@@ -120,16 +118,54 @@ public class GamePatchParser {
                                     if (data.isEmpty()) {
                                         break;
                                     }
-                                    //TODO pars date Thu, 08 Aug 2024 12:04:49 +0000
+                                    //TODO pars date :Thu, 08 Aug 2024 12:04:49 +0000
+                                    SimpleDateFormat parser = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+                                    var date = new java.sql.Date(parser.parse(data).getTime());
+                                    patch.pubDate = date;
                                     break;
                                 case AUTHOR:
                                     if (data.isEmpty()) {
                                         break;
                                     }
-                                    Author a = new Author(data);
-                                    var id = repo.createAuthor(a);
-                                    patch.authorId = id;
+
+                                    Author author = repo.getAuthors().stream()
+                                            .filter(a -> a.name == data)
+                                            .findFirst()
+                                            .orElse(null);
+
+                                    if (author == null) {
+                                        author = new Author(data);
+                                        author.idAuthor = repo.createAuthor(author);
+                                    }
+                                    patch.authorId = author.idAuthor;
                                     break;
+                                default:
+                                    break;
+                            }
+                        } else if (game != null) {
+                            String data = event.asCharacters().getData().trim();
+                            switch (tagType.get()) {
+                                case URL:
+                                    if (data.isEmpty()) {
+                                        break;
+                                    }
+                                    //TODO handle download picture and save
+                                    game.pictureURL = data;
+                                    break;
+                                case TITLE:
+                                    if (data.isEmpty()) {
+                                        break;
+                                    }
+                                    game.name = data;
+
+                                    break;
+                                case LINK:
+                                    if (data.isEmpty()) {
+                                        break;
+                                    }
+                                    game.steamURL = data;
+                                    break;
+
                                 default:
                                     break;
                             }
@@ -161,7 +197,7 @@ public class GamePatchParser {
 
         private static Optional<TagType> from(String name) {
             for (var value : values()) {
-                if (Boolean.valueOf(name.equals(name))) {
+                if ((value.name.equals(name))) {
                     return Optional.of(value);
                 }
             }
