@@ -156,7 +156,7 @@ public class SqlRepository implements Repository {
 
             stmt.setString(NAME, author.name);
             stmt.registerOutParameter(ID_AUTHOR, Types.INTEGER);
-            
+
             stmt.executeUpdate();
             return stmt.getInt(ID_AUTHOR);
         }
@@ -168,7 +168,7 @@ public class SqlRepository implements Repository {
         try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(UPDATE_AUTHOR)) {
             stmt.setInt(ID_AUTHOR, id);
             stmt.setString(NAME, author.name);
-            
+
             stmt.executeUpdate();
         }
     }
@@ -178,7 +178,7 @@ public class SqlRepository implements Repository {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(DELETE_AUTHOR)) {
             stmt.setInt(ID_AUTHOR, id);
-            
+
             stmt.executeUpdate();
         }
     }
@@ -296,32 +296,112 @@ public class SqlRepository implements Repository {
     @Override
 
     public int createPatch(Patch patch) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(CREATE_PATCH)) {
+
+            stmt.setString(TITLE, patch.title);
+            stmt.setString(DESCRIPTION, patch.description);
+            stmt.setString(LINK, patch.link);
+            stmt.setDate(PUB_DATE, patch.pubDate);
+            stmt.setInt(AUTHOR_ID, patch.authorId);
+            stmt.setInt(GAME_ID, patch.gameId);
+            stmt.registerOutParameter(ID_PATCH, Types.INTEGER);
+
+            stmt.executeUpdate();
+            return stmt.getInt(ID_PATCH);
+        }
     }
 
     @Override
     public void updatePatch(int id, Patch patch) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(UPDATE_PATCH)) {
+
+            stmt.setInt(ID_PATCH, id);
+            stmt.setString(TITLE, patch.title);
+            stmt.setString(DESCRIPTION, patch.description);
+            stmt.setString(LINK, patch.link);
+            stmt.setDate(PUB_DATE, patch.pubDate);
+            stmt.setInt(AUTHOR_ID, patch.authorId);
+            stmt.setInt(GAME_ID, patch.gameId);
+
+            stmt.executeUpdate();
+        }
     }
 
     @Override
     public void deletePatch(int id) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(DELETE_PATCH)) {
+            stmt.setInt(ID_PATCH, id);
+
+            stmt.executeUpdate();
+        }
     }
 
     @Override
     public Optional<Patch> getPatch(int id) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(GET_PATCH)) {
+            stmt.setInt(ID_PATCH, id);
+
+            try (var rs = stmt.executeQuery();) {
+                if (rs.next()) {
+                    return Optional.of(new Patch(
+                            rs.getInt(ID_PATCH),
+                            rs.getString(TITLE),
+                            rs.getString(DESCRIPTION),
+                            rs.getString(LINK),
+                            rs.getDate(PUB_DATE),
+                            rs.getInt(AUTHOR_ID),
+                            rs.getInt(GAME_ID)
+                    ));
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
     public List<Patch> getPatches() throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        List<Patch> patches = new ArrayList<>();
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(GET_PATCHES)) {
+            try (var rs = stmt.executeQuery();) {
+                if (rs.next()) {
+                    patches.add(new Patch(
+                            rs.getInt(ID_PATCH),
+                            rs.getString(TITLE),
+                            rs.getString(DESCRIPTION),
+                            rs.getString(LINK),
+                            rs.getDate(PUB_DATE),
+                            rs.getInt(AUTHOR_ID),
+                            rs.getInt(GAME_ID)
+                    ));
+                }
+            }
+        }
+        return patches;
     }
 
     @Override
-    public int createPatches(List<Patch> patchs) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void createPatches(List<Patch> patches) throws Exception {
+
+        for (var patch : patches) {
+            DataSource dataSource = DataSourceSingleton.getInstance();
+            try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(CREATE_PATCH)) {
+
+                stmt.setString(TITLE, patch.title);
+                stmt.setString(DESCRIPTION, patch.description);
+                stmt.setString(LINK, patch.link);
+                stmt.setDate(PUB_DATE, patch.pubDate);
+                stmt.setInt(AUTHOR_ID, patch.authorId);
+                stmt.setInt(GAME_ID, patch.gameId);
+                stmt.registerOutParameter(ID_PATCH, Types.INTEGER);
+
+                stmt.executeUpdate();
+            }
+        }
     }
 
 }

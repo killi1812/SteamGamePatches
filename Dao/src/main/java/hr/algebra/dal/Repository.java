@@ -39,7 +39,7 @@ public interface Repository {
     
     //Patch crud
     int createPatch(Patch patch) throws Exception;
-    int createPatches(List<Patch> patchs) throws Exception;
+    void createPatches(List<Patch> patches) throws Exception;
     void updatePatch(int id, Patch patch) throws Exception;
     void deletePatch(int id) throws Exception;
     Optional<Patch> getPatch(int id) throws Exception;

@@ -4,7 +4,7 @@
  */
 package hr.algebra.model;
 
-import java.util.Date;
+import java.sql.Date;
 
 /**
  *
@@ -12,12 +12,22 @@ import java.util.Date;
  */
 public class Patch {
 
+    public Patch(int idPatch, String title, String description, String link, Date pubDate, int authorId, int gameId) {
+        this.idPatch = idPatch;
+        this.title = title;
+        this.description = description;
+        this.link = link;
+        this.pubDate = pubDate;
+        this.authorId = authorId;
+        this.gameId = gameId;
+    }
+
     public int idPatch;
     public String title;
     public String description;
     public String link;
     //TODO check if good date is used there is one in sql models
     public Date pubDate;
-    public Author author;
+    public int authorId;
     public int gameId;
 }
