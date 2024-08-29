@@ -395,7 +395,7 @@ exec createGame
 
 Declare @id INT
 
-exec createAuthor
+exec createAutho
 @name = 'hubgod',
 @idAuthor = @id
 
