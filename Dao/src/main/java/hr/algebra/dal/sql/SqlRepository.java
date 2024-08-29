@@ -199,6 +199,20 @@ public class SqlRepository implements Repository {
     }
 
     @Override
+    public void createAuthors(List<Author> authors) throws Exception {
+        for (var author : authors) {
+            DataSource dataSource = DataSourceSingleton.getInstance();
+            try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(CREATE_AUTHOR)) {
+
+                stmt.setString(NAME, author.name);
+                stmt.registerOutParameter(ID_AUTHOR, Types.INTEGER);
+
+                stmt.executeUpdate();
+            }
+        }
+    }
+
+    @Override
     public List<Author> getAuthors() throws Exception {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }

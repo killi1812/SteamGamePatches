@@ -12,6 +12,9 @@ import java.sql.Date;
  */
 public class Patch {
 
+    public Patch() {
+    }
+
     public Patch(int idPatch, String title, String description, String link, Date pubDate, int authorId, int gameId) {
         this.idPatch = idPatch;
         this.title = title;

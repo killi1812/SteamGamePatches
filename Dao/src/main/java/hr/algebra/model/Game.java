@@ -10,7 +10,7 @@ package hr.algebra.model;
  */
 public class Game {
     //TODO valjda netrebaju getteri i setteri
-
+    public Game(){}
     public Game(int id, String name, String steamURL, String pictureURl) {
         idSteamGame = id;
         this.name = name;
