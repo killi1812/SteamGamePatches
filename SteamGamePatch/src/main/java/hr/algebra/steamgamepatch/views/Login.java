@@ -36,12 +36,10 @@ public class Login extends javax.swing.JPanel {
 
     private void clearForm() {
         //TODO implement
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     private void validateForm() {
         //TODO check if empty
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     /**

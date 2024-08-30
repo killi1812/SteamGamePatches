@@ -6,7 +6,10 @@ package hr.algebra.steamgamepatch;
 
 import hr.algebra.model.User;
 import hr.algebra.parser.GamePatchParser;
+import hr.algebra.steamgamepatch.views.Games;
 import hr.algebra.steamgamepatch.views.Login;
+import hr.algebra.steamgamepatch.views.Patches;
+import hr.algebra.steamgamepatch.views.Users;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -34,45 +37,25 @@ public class Main extends javax.swing.JFrame {
     private void initComponents() {
 
         tpContent = new javax.swing.JTabbedPane();
-        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(1280, 720));
-
-        jButton1.setText("GetPlants");
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        tpContent.addTab("GetPlants btn", jButton1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(tpContent, javax.swing.GroupLayout.DEFAULT_SIZE, 791, Short.MAX_VALUE)
+            .addComponent(tpContent, javax.swing.GroupLayout.DEFAULT_SIZE, 1280, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, 0)
-                .addComponent(tpContent, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE))
+                .addComponent(tpContent, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {
-            GamePatchParser.parse(394360);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        // TODO add your handling code here:
-
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -109,7 +92,6 @@ public class Main extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JTabbedPane tpContent;
     // End of variables declaration//GEN-END:variables
 
@@ -119,15 +101,12 @@ public class Main extends javax.swing.JFrame {
         if (!login.IsLoggedIn()) {
             return;
         }
+        tpContent.add("Patches", new Patches());
         if (login.IsAdmin()) {
-            //TODO add admin views
-            tpContent.add("Admin", new Login(() -> {
-            }));
-        }
-        tpContent.add("user", new Login(() -> {
-        }));
+            tpContent.add("Games", new Games());
+            tpContent.add("Users", new Users());
 
-        //todo add rest
+        }
     }
 
     private void loginPanel() {

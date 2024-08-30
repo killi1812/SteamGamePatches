@@ -184,8 +184,11 @@ public class GamePatchParser {
                 }
             }
         }
+        var gameOld = repo.getGame(game.idSteamGame);
+        if (gameOld.isEmpty()) {
+            repo.createGame(game);
+        }
 
-        repo.createGame(game);
         repo.createPatches(patches);
     }
 
