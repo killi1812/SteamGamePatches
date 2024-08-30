@@ -51,7 +51,7 @@ public class SqlRepository implements Repository {
     private static final String PICTURE_URL = "pictureURL";
 
     private static final String CREATE_GAME = "{ CALL CreateGame (?,?,?,?) }";
-    private static final String UPDATE_GAME = "{ CALL UpdateGame (?,?,?,?,?) }";
+    private static final String UPDATE_GAME = "{ CALL UpdateGame (?,?,?,?) }";
     private static final String DELETE_GAME = "{ CALL DeleteGame (?) }";
     private static final String GET_GAME = "{ CALL ReadGame (?) }";
     private static final String GET_GAMES = "{ CALL ReadGames }";
@@ -79,7 +79,7 @@ public class SqlRepository implements Repository {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(UPDATE_GAME)) {
 
-            stmt.setInt(ID_STEAM_GAME, game.idSteamGame);
+            stmt.setInt(ID_STEAM_GAME, id);
             stmt.setString(NAME, game.name);
             stmt.setString(PICTURE_URL, game.pictureURL);
             stmt.setString(STEAM_URL, game.steamURL);

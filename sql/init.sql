@@ -201,7 +201,6 @@ END;
 
 -- Update Game
 CREATE OR ALTER PROCEDURE UpdateGame
-    @idGame INT,
     @idSteamGame INT,
     @name NVARCHAR(255),
     @pictureURL NVARCHAR(255) = NULL,
@@ -210,8 +209,8 @@ CREATE OR ALTER PROCEDURE UpdateGame
 AS
 BEGIN
     UPDATE Games
-    SET idSteamGame = @idSteamGame, [name] = @name, pictureURL = @pictureURL, steamURL = @steamURL
-    WHERE idGame = @idGame
+    SET [name] = @name, pictureURL = @pictureURL, steamURL = @steamURL
+    WHERE idSteamGame = @idSteamGame
 END;
 
 
