@@ -83,6 +83,7 @@ public class Login extends javax.swing.JPanel {
             }
         });
 
+        tfPass.setText("Password");
         tfPass.setToolTipText("Write your password");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);

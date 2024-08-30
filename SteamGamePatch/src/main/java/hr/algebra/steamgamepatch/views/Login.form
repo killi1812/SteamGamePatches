@@ -63,6 +63,7 @@
     </Component>
     <Component class="javax.swing.JPasswordField" name="tfPass">
       <Properties>
+        <Property name="text" type="java.lang.String" value="Password"/>
         <Property name="toolTipText" type="java.lang.String" value="Write your password"/>
       </Properties>
     </Component>
