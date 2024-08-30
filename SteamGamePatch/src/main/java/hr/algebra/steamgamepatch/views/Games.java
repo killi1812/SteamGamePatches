@@ -68,7 +68,7 @@ public class Games extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        Parse = new javax.swing.JButton();
+        btnParse = new javax.swing.JButton();
         tfSteamGameId = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -86,10 +86,10 @@ public class Games extends javax.swing.JPanel {
         btnDelete = new javax.swing.JButton();
         lblPic = new javax.swing.JLabel();
 
-        Parse.setText("Get Patches");
-        Parse.addActionListener(new java.awt.event.ActionListener() {
+        btnParse.setText("Get Patches");
+        btnParse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ParseActionPerformed(evt);
+                btnParseActionPerformed(evt);
             }
         });
 
@@ -167,7 +167,7 @@ public class Games extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tfSteamGameId, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(Parse)
+                        .addComponent(btnParse)
                         .addGap(207, 207, 207)))
                 .addGap(163, 163, 163))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -184,7 +184,7 @@ public class Games extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(Parse)
+                    .addComponent(btnParse)
                     .addComponent(tfSteamGameId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -219,8 +219,9 @@ public class Games extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void ParseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ParseActionPerformed
+    private void btnParseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnParseActionPerformed
         // TODO add your handling code here:
+        btnParse.setText("Working ...");
         var gameId = tfSteamGameId.getText().trim();
         try {
             GamePatchParser.parse(Integer.valueOf(gameId));
@@ -232,9 +233,10 @@ public class Games extends javax.swing.JPanel {
             MessageUtils.showErrorMessage("ERROR", String.format(
                     "Failed to parse patches for game %s", gameId));
         } finally {
+            btnParse.setText("Get Patches");
             getGames();
         }
-    }//GEN-LAST:event_ParseActionPerformed
+    }//GEN-LAST:event_btnParseActionPerformed
 
     private void lsGamesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lsGamesValueChanged
         if (!evt.getValueIsAdjusting()) {
@@ -295,9 +297,9 @@ public class Games extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton Parse;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnParse;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
