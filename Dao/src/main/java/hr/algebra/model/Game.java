@@ -9,8 +9,11 @@ package hr.algebra.model;
  * @author fran
  */
 public class Game {
+
     //TODO valjda netrebaju getteri i setteri
-    public Game(){}
+    public Game() {
+    }
+
     public Game(int id, String name, String steamURL, String pictureURl) {
         idSteamGame = id;
         this.name = name;
@@ -25,7 +28,7 @@ public class Game {
 
     @Override
     public String toString() {
-        return "Game{" + "idSteamGame=" + idSteamGame + ", name=" + name + ", steamURL=" + steamURL + ", pictureURL=" + pictureURL + '}';
+        return name;
     }
 
     @Override
