@@ -25,8 +25,18 @@ public class UrlConnectionFactory {
     private UrlConnectionFactory() {
     }
 
-    public static HttpURLConnection getHttpUrlConnection(int IdGame) throws MalformedURLException, IOException {
+    public static HttpURLConnection getHttpUrlConnectionGame(int IdGame) throws MalformedURLException, IOException {
         URL url = new URL(String.format(PATH, IdGame));
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setConnectTimeout(TIMEOUT);
+        con.setReadTimeout(TIMEOUT);
+        con.setRequestMethod(REQUEST_METHOD);
+        con.addRequestProperty(USER_AGENT, MOZILLA);
+        return con;
+    }
+
+    public static HttpURLConnection getHttpUrlConnection(String link) throws MalformedURLException, IOException {
+        URL url = new URL(link);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setConnectTimeout(TIMEOUT);
         con.setReadTimeout(TIMEOUT);

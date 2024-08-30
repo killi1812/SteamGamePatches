@@ -109,8 +109,8 @@ public class SqlRepository implements Repository {
                     return Optional.of(new Game(
                             rs.getInt(ID_STEAM_GAME),
                             rs.getString(NAME),
-                            rs.getString(PICTURE_URL),
-                            rs.getString(STEAM_URL)
+                            rs.getString(STEAM_URL),
+                            rs.getString(PICTURE_URL)
                     ));
                 }
             }
@@ -130,8 +130,8 @@ public class SqlRepository implements Repository {
                     games.add(new Game(
                             rs.getInt(ID_STEAM_GAME),
                             rs.getString(NAME),
-                            rs.getString(PICTURE_URL),
-                            rs.getString(STEAM_URL)
+                            rs.getString(STEAM_URL),
+                            rs.getString(PICTURE_URL)
                     ));
                 }
             }

@@ -48,7 +48,7 @@ public class GamePatchParser {
 
         String imageName = UUID.randomUUID() + ext;
         String localPath = DIR + File.separator + imageName;
-        //FileUtils.copyFromURL(data, localPath);
+        FileUtils.copyFromUrl(data, localPath);
         game.pictureURL = localPath;
     }
 
@@ -61,7 +61,7 @@ public class GamePatchParser {
 
         repo = RepositoryFactory.getInstance();
         //TODO make a check if the game id is right
-        var con = UrlConnectionFactory.getHttpUrlConnection(idGame);
+        var con = UrlConnectionFactory.getHttpUrlConnectionGame(idGame);
 
         try (var is = con.getInputStream();) {
             var reader = ParserFactory.createStaxParser(is);
@@ -159,8 +159,7 @@ public class GamePatchParser {
                                     if (data.isEmpty()) {
                                         break;
                                     }
-                                    //TODO handle download picture and save
-                                    game.pictureURL = data;
+                                    handlePicture(game, data);
                                     break;
                                 case TITLE:
                                     if (data.isEmpty()) {

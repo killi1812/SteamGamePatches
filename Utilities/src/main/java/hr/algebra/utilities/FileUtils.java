@@ -45,14 +45,14 @@ public class FileUtils {
         }
         return Optional.empty();
     }
-// TODO review 
-//    public static void copyFromUrl(String source, String destination) throws MalformedURLException, IOException {
-//        createDirHierarchy(destination);
-//        HttpURLConnection con = UrlConnectionFactory.getHttpUrlConnection(source);
-//        try (InputStream is = con.getInputStream()) {
-//            Files.copy(is, Paths.get(destination));
-//        }
-//    }
+    
+    public static void copyFromUrl(String source, String destination) throws MalformedURLException, IOException {
+        createDirHierarchy(destination);
+        HttpURLConnection con = UrlConnectionFactory.getHttpUrlConnection(source);
+        try (InputStream is = con.getInputStream()) {
+            Files.copy(is, Paths.get(destination));
+        }
+    }
 
     public static void copy(String source, String destination) throws FileNotFoundException, IOException {
         createDirHierarchy(destination);

@@ -449,7 +449,7 @@ inner join authors as a
 on p.authorId = a.idAuthor;
 
 
-select * from patches
+select * from users
 
 insert into users(username,password,isAdmin)
 values('admin','123',1)
