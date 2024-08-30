@@ -243,7 +243,6 @@ public class Games extends javax.swing.JPanel {
             Game selectedItem = lsGames.getSelectedValue();
             if (selectedItem != null) {
                 SetSelectedGame(selectedItem);
-                System.out.println("Selected ID: " + selectedItem.idSteamGame);
             }
         }
     }//GEN-LAST:event_lsGamesValueChanged
