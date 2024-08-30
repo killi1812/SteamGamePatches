@@ -4,7 +4,11 @@
  */
 package hr.algebra.steamgamepatch;
 
+import hr.algebra.model.User;
 import hr.algebra.parser.GamePatchParser;
+import hr.algebra.steamgamepatch.views.Login;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,6 +21,7 @@ public class Main extends javax.swing.JFrame {
      */
     public Main() {
         initComponents();
+        loginPanel();
     }
 
     /**
@@ -28,33 +33,32 @@ public class Main extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        tpContent = new javax.swing.JTabbedPane();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(1280, 720));
 
         jButton1.setText("GetPlants");
+        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
+        tpContent.addTab("GetPlants btn", jButton1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(962, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(42, 42, 42))
+            .addComponent(tpContent, javax.swing.GroupLayout.DEFAULT_SIZE, 791, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(549, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(24, 24, 24))
+                .addGap(0, 0, 0)
+                .addComponent(tpContent, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE))
         );
 
         pack();
@@ -104,8 +108,31 @@ public class Main extends javax.swing.JFrame {
             }
         });
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JTabbedPane tpContent;
     // End of variables declaration//GEN-END:variables
+
+    private Login login;
+
+    private void initPanels() {
+        if (!login.IsLoggedIn()) {
+            return;
+        }
+        if (login.IsAdmin()) {
+            //TODO add admin views
+            tpContent.add("Admin", new Login(() -> {
+            }));
+        }
+        tpContent.add("user", new Login(() -> {
+        }));
+
+        //todo add rest
+    }
+
+    private void loginPanel() {
+        login = new Login(() -> initPanels());
+        tpContent.addTab("Login", login);
+    }
+
 }

@@ -38,7 +38,7 @@ create table Patches(
     authorId int not null
     foreign key references Authors(idAuthor),
     gameId int not null
-    foreign key references Games(idSteamGame),
+    foreign key references Games(idSteamGame) ON DELETE CASCADE,
 );
 
 -- Users CRUD Procedures
@@ -65,6 +65,11 @@ BEGIN
     SELECT * FROM [Users] WHERE idUser = @idUser
 END;
 
+CREATE OR ALTER PROCEDURE ReadUsers
+AS
+BEGIN
+    SELECT * FROM [Users]
+END;
 
 -- Update User
 CREATE OR ALTER PROCEDURE UpdateUser
@@ -444,7 +449,10 @@ inner join authors as a
 on p.authorId = a.idAuthor;
 
 
-select * from authors
+select * from patches
+
+insert into users(username,password,isAdmin)
+values('admin','123',1)
 
 -- exec deleteAuthor @idAuthor =1 
 

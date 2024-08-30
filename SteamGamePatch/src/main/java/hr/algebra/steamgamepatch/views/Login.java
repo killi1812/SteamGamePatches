@@ -8,6 +8,7 @@ import hr.algebra.dal.Repository;
 import hr.algebra.dal.RepositoryFactory;
 import hr.algebra.model.User;
 import hr.algebra.utilities.MessageUtils;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -15,25 +16,46 @@ import hr.algebra.utilities.MessageUtils;
  */
 public class Login extends javax.swing.JPanel {
 
-    public static User loggedInUser = null;
-    public final Repository repo;
+    private static void login() {
 
-    public static boolean IsLoggedIn() {
+    }
+
+    private User loggedInUser = null;
+    private final Repository repo;
+
+    public boolean IsLoggedIn() {
         return loggedInUser != null;
     }
 
-    public static boolean IsAdmin() {
+    public boolean IsAdmin() {
         if (loggedInUser == null) {
             return Boolean.FALSE;
         }
         return loggedInUser.isAdmin;
     }
 
+    private void clearForm() {
+        //TODO implement
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    private void validateForm() {
+        //TODO check if empty
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
     /**
      * Creates new form Login
      */
-    //TODO mby singleton
-    public Login() {
+    public interface op {
+
+        void loginAction();
+    };
+
+    private op loginFunc;
+
+    public Login(op func) {
+        loginFunc = func;
         repo = RepositoryFactory.getInstance();
         initComponents();
     }
@@ -70,7 +92,7 @@ public class Login extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(133, Short.MAX_VALUE)
+                .addGap(133, 133, 133)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -83,14 +105,14 @@ public class Login extends javax.swing.JPanel {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(95, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(95, 95, 95)
                 .addComponent(tfUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(24, 24, 24)
                 .addComponent(tfPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnLogin)
-                .addGap(82, 82, 82))
+                .addContainerGap(82, Short.MAX_VALUE))
         );
 
         getAccessibleContext().setAccessibleName("LoginVew");
@@ -102,6 +124,9 @@ public class Login extends javax.swing.JPanel {
         var username = tfUsername.getText();
         //TODO ne storaj u string jel ce biti cashiran
         var password = new String(tfPass.getPassword());
+
+        validateForm();
+
         User user = null;
         try {
             user = repo.getUsers().stream()
@@ -110,23 +135,26 @@ public class Login extends javax.swing.JPanel {
                     .orElse(null);
         } catch (Exception e) {
             MessageUtils.showErrorMessage("ERROR", "Failed to get users");
+            System.out.println(e);
             return;
         }
         if (user == null) {
             MessageUtils.showErrorMessage(
                     "User doesn't exist",
-                    String.format("User: %d doesn't exist", username)
+                    String.format("User: %s doesn't exist", username)
             );
             return;
         }
 
-        if (user.password == password) {
+        if (user.password.equals(password)) {
             loggedInUser = user;
+            loginFunc.loginAction();
+            clearForm();
             return;
         }
         MessageUtils.showErrorMessage(
                 "Wrong password",
-                String.format("Wrong password for user: %d", username));
+                String.format("Wrong password for user: %s", username));
 
 
     }//GEN-LAST:event_btnLoginActionPerformed
