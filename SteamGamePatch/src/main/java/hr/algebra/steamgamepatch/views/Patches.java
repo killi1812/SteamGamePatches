@@ -6,13 +6,15 @@ package hr.algebra.steamgamepatch.views;
 
 import hr.algebra.dal.Repository;
 import hr.algebra.dal.RepositoryFactory;
+import hr.algebra.model.Author;
 import hr.algebra.model.Game;
 import hr.algebra.model.Patch;
 import hr.algebra.steamgamepatch.views.model.GameComboBoxModel;
 import hr.algebra.steamgamepatch.views.model.PatchTableModel;
 import hr.algebra.utilities.MessageUtils;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import javax.swing.ListSelectionModel;
 
 /**
@@ -151,8 +153,18 @@ public class Patches extends javax.swing.JPanel {
         });
 
         btnCreate.setText("Create");
+        btnCreate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCreateActionPerformed(evt);
+            }
+        });
 
         btnEdit.setText("Edit");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         btnDelete.setText("Delete");
         btnDelete.addActionListener(new java.awt.event.ActionListener() {
@@ -299,6 +311,125 @@ public class Patches extends javax.swing.JPanel {
         setSelectedPatch((int) tblPatches.getValueAt(row, 0));
     }//GEN-LAST:event_tblPatchesKeyPressed
 
+    private void btnCreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateActionPerformed
+        // TODO add your handling code here:
+        if (!ValidateForm()) {
+            MessageUtils.showErrorMessage("ERROR",
+                    String.format("Failed To Create new Patch"
+                    ));
+            return;
+        }
+
+        if (selectedPatchId != 0) {
+            MessageUtils.showErrorMessage("ERROR",
+                    String.format("Can't create new patch from selected patch"
+                    ));
+            return;
+        }
+
+        Author author = null;
+        try {
+            author = repo.getAuthors().stream()
+                    .filter(a -> a.name.equals(tfAuthor.getText()))
+                    .findFirst()
+                    .orElse(new Author(tfAuthor.getText()));
+            if (author.idAuthor == 0) {
+                author.idAuthor = repo.createAuthor(author);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Delete Patch %d", selectedPatchId));
+
+        }
+
+        Date pubDate = null;
+
+        var dateRaw = tfDate.getText();
+        SimpleDateFormat parser = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+        try {
+            pubDate = new java.sql.Date(parser.parse(dateRaw).getTime());
+        } catch (ParseException e) {
+            System.out.println(e);
+            MessageUtils.showErrorMessage("ERROR", String.format("Wrong date format should be yyyy/MM/dd HH:mm:ss is  %s", dateRaw));
+        }
+
+        Patch newPatch = new Patch(
+                tfTitle.getText(),
+                epDesc.getText(),
+                tfLink.getText(),
+                pubDate,
+                author.idAuthor,
+                ((Game) cbGames.getSelectedItem()).idSteamGame);
+
+        try {
+            repo.createPatch(newPatch);
+        } catch (Exception e) {
+            System.out.println(e);
+            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Delete Patch %d", selectedPatchId));
+
+        } finally {
+            clearSelected();
+            LoadPatches(selectedPatchId);
+        }
+    }//GEN-LAST:event_btnCreateActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        // TODO add your handling code here:
+        if (!ValidateForm()) {
+            MessageUtils.showErrorMessage("ERROR",
+                    String.format("Failed To Create new Patch"
+                    ));
+            return;
+        }
+        Author author = null;
+
+        try {
+            author = repo.getAuthors().stream()
+                    .filter(a -> a.name.equals(tfAuthor.getText()))
+                    .findFirst()
+                    .orElse(new Author(tfAuthor.getText()));
+            if (author.idAuthor == 0) {
+                author.idAuthor = repo.createAuthor(author);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Delete Patch %d", selectedPatchId));
+
+        }
+
+        Date pubDate = null;
+
+        var dateRaw = tfDate.getText();
+        SimpleDateFormat parser = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+        try {
+            pubDate = new java.sql.Date(parser.parse(dateRaw).getTime());
+        } catch (ParseException e) {
+            System.out.println(e);
+            MessageUtils.showErrorMessage("ERROR", String.format("Wrong date format should be yyyy/MM/dd HH:mm:ss is  %s", dateRaw));
+        }
+
+        
+        Patch newPatch = new Patch(
+                tfTitle.getText(),
+                epDesc.getText(),
+                tfLink.getText(),
+                pubDate,
+                author.idAuthor,
+                //TODO select game
+                ((Game) cbGames.getSelectedItem()).idSteamGame);
+
+        try {
+            repo.updatePatch(selectedPatchId, newPatch);
+        } catch (Exception e) {
+            System.out.println(e);
+            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Delete Patch %d", selectedPatchId));
+
+        } finally {
+            clearSelected();
+            LoadPatches(selectedPatchId);
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
+
     private void clearSelected() {
         cbGames.setSelectedIndex(0);
         selectedPatchId = 0;
@@ -330,6 +461,12 @@ public class Patches extends javax.swing.JPanel {
         //TODO set author
     }
 
+    private boolean ValidateForm() {
+        if (((Game) cbGames.getSelectedItem()).idSteamGame == 0) {
+            return false;
+        }
+        return true;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnClear;
