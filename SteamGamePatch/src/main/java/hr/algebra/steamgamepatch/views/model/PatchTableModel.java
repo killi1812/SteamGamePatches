@@ -46,6 +46,10 @@ public class PatchTableModel extends AbstractTableModel {
     private final List<Patch> patches;
     private final Repository repo;
 
+    public Patch GetPatch(int location) {
+        return patches.get(location);
+    }
+
     public PatchTableModel(List<Patch> patches) {
         this.patches = patches;
         repo = RepositoryFactory.getInstance();

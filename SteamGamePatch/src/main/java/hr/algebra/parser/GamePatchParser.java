@@ -110,12 +110,8 @@ public class GamePatchParser {
                                     if (data.isEmpty()) {
                                         break;
                                     }
+                                    //TODO doen't parse everithing
                                     desc.append(data);
-                                    //Variant that removes html could be used
-                                    //var html = Jsoup.parse(desc.toString());
-                                    //patch.description = html.text();
-                                    //TODO check what is up with desc hard time parsing html
-
                                     patch.description = desc.toString();
                                     break;
                                 case LINK:

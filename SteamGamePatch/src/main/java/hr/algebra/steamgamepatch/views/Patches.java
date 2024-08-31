@@ -7,6 +7,8 @@ package hr.algebra.steamgamepatch.views;
 import hr.algebra.dal.Repository;
 import hr.algebra.dal.RepositoryFactory;
 import hr.algebra.model.Game;
+import hr.algebra.model.Patch;
+import hr.algebra.steamgamepatch.views.model.GameComboBoxModel;
 import hr.algebra.steamgamepatch.views.model.PatchTableModel;
 import hr.algebra.utilities.MessageUtils;
 import java.util.logging.Level;
@@ -20,13 +22,13 @@ import javax.swing.ListSelectionModel;
 public class Patches extends javax.swing.JPanel {
 
     private final Repository repo;
-    private Game selectedGame;
-    private PatchTableModel model;
+    private int selectedPatchId;
 
     public Patches() {
         repo = RepositoryFactory.getInstance();
         initComponents();
         SetupTable();
+        LoadGames();
         LoadPatches();
     }
 
@@ -37,6 +39,8 @@ public class Patches extends javax.swing.JPanel {
                     .toList();
 
             //TODO fill the dropdown
+            var gameModel = new GameComboBoxModel(games);
+            cbGames.setModel(gameModel);
         } catch (Exception e) {
             System.out.println(e);
             MessageUtils.showErrorMessage("ERROR", String.format("Failed To Get Games"));
@@ -49,7 +53,7 @@ public class Patches extends javax.swing.JPanel {
             var patches = repo.getPatches().stream()
                     .sorted((p1, p2) -> -p1.pubDate.compareTo(p2.pubDate))
                     .toList();
-            model = new PatchTableModel(patches);
+            var model = new PatchTableModel(patches);
             tblPatches.setModel(model);
         } catch (Exception e) {
             System.out.println(e);
@@ -60,11 +64,17 @@ public class Patches extends javax.swing.JPanel {
     }
 
     private void LoadPatches(int steamGameId) {
+        if (steamGameId == 0) {
+            LoadPatches();
+            return;
+        }
         try {
             var patches = repo.getPatches().stream()
                     .filter(p -> p.gameId == steamGameId)
                     .sorted((p1, p2) -> -p1.pubDate.compareTo(p2.pubDate))
                     .toList();
+            var model = new PatchTableModel(patches);
+            tblPatches.setModel(model);
         } catch (Exception e) {
             System.out.println(e);
             MessageUtils.showErrorMessage("ERROR", String.format("Failed To Load Patches for game %d", steamGameId));
@@ -123,18 +133,33 @@ public class Patches extends javax.swing.JPanel {
                 tblPatchesMouseClicked(evt);
             }
         });
+        tblPatches.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tblPatchesKeyPressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblPatches);
 
         epDesc.setContentType("text/html"); // NOI18N
         jScrollPane2.setViewportView(epDesc);
 
         btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
 
         btnCreate.setText("Create");
 
         btnEdit.setText("Edit");
 
         btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Title:");
 
@@ -146,61 +171,62 @@ public class Patches extends javax.swing.JPanel {
 
         jLabel6.setText("Game:");
 
+        cbGames.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbGamesItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(45, 45, 45)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 127, Short.MAX_VALUE)
+                        .addContainerGap(172, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnCreate)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnEdit)
                                 .addGap(18, 18, 18)
-                                .addComponent(btnDelete)
-                                .addGap(150, 150, 150))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel6)
+                                .addComponent(btnDelete))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel6)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(cbGames, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(tfLink, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(jLabel3)
+                                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING))
                                         .addGap(18, 18, 18)
-                                        .addComponent(cbGames, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                            .addComponent(jLabel2)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(tfLink, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                .addComponent(jLabel3)
-                                                .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING))
-                                            .addGap(18, 18, 18)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                .addComponent(tfDate)
-                                                .addComponent(tfAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(tfTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addGap(119, 119, 119)))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(tfDate)
+                                            .addComponent(tfAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(tfTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGap(119, 119, 119)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(45, 45, 45)
+                        .addComponent(jScrollPane1)))
                 .addGap(45, 45, 45))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(jScrollPane2)
-                        .addGap(30, 30, 30))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(31, 31, 31)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -227,18 +253,82 @@ public class Patches extends javax.swing.JPanel {
                             .addComponent(btnClear)
                             .addComponent(btnCreate)
                             .addComponent(btnEdit)
-                            .addComponent(btnDelete))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)))
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                            .addComponent(btnDelete)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(35, 35, 35)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
                 .addGap(19, 19, 19))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void tblPatchesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPatchesMouseClicked
-        int row = tblPatches.convertRowIndexToModel(tblPatches.getSelectedRow());
-        //TODO selectaj u modelu
-
+        int i = tblPatches.getSelectedRow();
+        int row = tblPatches.convertRowIndexToModel(i);
+        setSelectedPatch((int) tblPatches.getValueAt(row, 0));
     }//GEN-LAST:event_tblPatchesMouseClicked
+
+    private void cbGamesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbGamesItemStateChanged
+        int gameId = ((Game) cbGames.getSelectedItem()).idSteamGame;
+        LoadPatches(gameId);
+    }//GEN-LAST:event_cbGamesItemStateChanged
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        clearSelected();
+    }//GEN-LAST:event_btnClearActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+
+        if (selectedPatchId == 0) {
+            return;
+        }
+        try {
+            repo.deletePatch(selectedPatchId);
+        } catch (Exception e) {
+            System.out.println(e);
+            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Delete Patch %d", selectedPatchId));
+        } finally {
+            clearSelected();
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void tblPatchesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tblPatchesKeyPressed
+        int i = tblPatches.getSelectedRow();
+        int row = tblPatches.convertRowIndexToModel(i);
+        setSelectedPatch((int) tblPatches.getValueAt(row, 0));
+    }//GEN-LAST:event_tblPatchesKeyPressed
+
+    private void clearSelected() {
+        cbGames.setSelectedIndex(0);
+        selectedPatchId = 0;
+        tfTitle.setText("");
+        tfLink.setText("");
+        tfDate.setText("");
+        epDesc.setText("");
+    }
+
+    private void setSelectedPatch(int id) {
+        Patch patch = null;
+        try {
+            var p = repo.getPatch(id);
+            if (p.isEmpty()) {
+                return;
+            }
+            patch = p.get();
+        } catch (Exception e) {
+            System.out.println(e);
+            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Delete Patch %d", selectedPatchId));
+        }
+
+        selectedPatchId = patch.idPatch;
+        tfTitle.setText(patch.title);
+        tfLink.setText(patch.link);
+        //TODO add hours
+        tfDate.setText(patch.pubDate.toString());
+        epDesc.setText(patch.description);
+        //TODO set author
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -246,7 +336,7 @@ public class Patches extends javax.swing.JPanel {
     private javax.swing.JButton btnCreate;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
-    private javax.swing.JComboBox<String> cbGames;
+    private javax.swing.JComboBox<Game> cbGames;
     private javax.swing.JEditorPane epDesc;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
