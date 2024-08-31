@@ -166,7 +166,6 @@ BEGIN
 END;
 
 CREATE OR ALTER PROCEDURE ReadPatches
-    @IdPatch INT
 AS
 BEGIN
     SELECT * FROM Patches

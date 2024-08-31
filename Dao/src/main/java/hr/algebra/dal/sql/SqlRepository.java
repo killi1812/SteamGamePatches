@@ -5,7 +5,6 @@
 package hr.algebra.dal.sql;
 
 import hr.algebra.dal.Repository;
-import hr.algebra.model.Article;
 import hr.algebra.model.Author;
 import hr.algebra.model.Game;
 import hr.algebra.model.Patch;
@@ -14,36 +13,12 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Types;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 
 public class SqlRepository implements Repository {
-
-//TODO remove after implementing create Patches 
-//    @Override
-//    public void createArticles(List<Article> articles) throws Exception {
-//        DataSource dataSource = DataSourceSingleton.getInstance();
-//        try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(CREATE_ARTICLE)) {
-//
-//            for (Article article : articles) {
-//
-//                stmt.setString(TITLE, article.getTitle());
-//                stmt.setString(LINK, article.getLink());
-//                stmt.setString(DESCRIPTION, article.getDescription());
-//                stmt.setString(PICTURE_PATH, article.getPicturePath());
-//                stmt.setString(PUBLISHED_DATE,
-//                        article.getPublishedDate().format(Article.DATE_FORMATTER));
-//
-//                stmt.registerOutParameter(ID_ARTICLE, Types.INTEGER);
-//
-//                stmt.executeUpdate();
-//            }
-//        }
-//
-//    }
     //Game 
     private static final String ID_STEAM_GAME = "idSteamGame";
     private static final String NAME = "name";
@@ -57,7 +32,6 @@ public class SqlRepository implements Repository {
     private static final String GET_GAMES = "{ CALL ReadGames }";
 
     @Override
-
     public int createGame(Game game) throws Exception {
         DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection(); CallableStatement stmt = con.prepareCall(CREATE_GAME)) {

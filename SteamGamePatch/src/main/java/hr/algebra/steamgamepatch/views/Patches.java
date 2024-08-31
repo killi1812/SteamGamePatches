@@ -4,17 +4,79 @@
  */
 package hr.algebra.steamgamepatch.views;
 
+import hr.algebra.dal.Repository;
+import hr.algebra.dal.RepositoryFactory;
+import hr.algebra.model.Game;
+import hr.algebra.steamgamepatch.views.model.PatchTableModel;
+import hr.algebra.utilities.MessageUtils;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ListSelectionModel;
+
 /**
  *
  * @author fran
  */
 public class Patches extends javax.swing.JPanel {
 
-    /**
-     * Creates new form Patches
-     */
+    private final Repository repo;
+    private Game selectedGame;
+    private PatchTableModel model;
+
     public Patches() {
+        repo = RepositoryFactory.getInstance();
         initComponents();
+        SetupTable();
+        LoadPatches();
+    }
+
+    private void LoadGames() {
+        try {
+            var games = repo.getGames().stream()
+                    .sorted((g1, g2) -> g1.name.compareToIgnoreCase(g2.name))
+                    .toList();
+
+            //TODO fill the dropdown
+        } catch (Exception e) {
+            System.out.println(e);
+            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Get Games"));
+        } finally {
+        }
+    }
+
+    private void LoadPatches() {
+        try {
+            var patches = repo.getPatches().stream()
+                    .sorted((p1, p2) -> -p1.pubDate.compareTo(p2.pubDate))
+                    .toList();
+            model = new PatchTableModel(patches);
+            tblPatches.setModel(model);
+        } catch (Exception e) {
+            System.out.println(e);
+            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Load Patches"));
+        } finally {
+
+        }
+    }
+
+    private void LoadPatches(int steamGameId) {
+        try {
+            var patches = repo.getPatches().stream()
+                    .filter(p -> p.gameId == steamGameId)
+                    .sorted((p1, p2) -> -p1.pubDate.compareTo(p2.pubDate))
+                    .toList();
+        } catch (Exception e) {
+            System.out.println(e);
+            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Load Patches for game %d", steamGameId));
+        } finally {
+
+        }
+    }
+
+    private void SetupTable() {
+        tblPatches.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tblPatches.setAutoCreateRowSorter(true);
+        tblPatches.setRowHeight(25);
     }
 
     /**
@@ -27,7 +89,7 @@ public class Patches extends javax.swing.JPanel {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblPatches = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         epDesc = new javax.swing.JEditorPane();
         btnClear = new javax.swing.JButton();
@@ -35,17 +97,17 @@ public class Patches extends javax.swing.JPanel {
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        tfTitle = new javax.swing.JTextField();
+        tfLink = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        tfDate = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        tfAuthor = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbGames = new javax.swing.JComboBox<>();
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblPatches.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -56,7 +118,12 @@ public class Patches extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        tblPatches.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblPatchesMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblPatches);
 
         epDesc.setContentType("text/html"); // NOI18N
         jScrollPane2.setViewportView(epDesc);
@@ -78,8 +145,6 @@ public class Patches extends javax.swing.JPanel {
         jLabel4.setText("Author:");
 
         jLabel6.setText("Game:");
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -105,24 +170,24 @@ public class Patches extends javax.swing.JPanel {
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel6)
                                         .addGap(18, 18, 18)
-                                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(cbGames, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                             .addComponent(jLabel2)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(tfLink, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                                 .addComponent(jLabel3)
                                                 .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING))
                                             .addGap(18, 18, 18)
                                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                                .addComponent(jTextField3)
-                                                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addComponent(tfDate)
+                                                .addComponent(tfAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                         .addGroup(layout.createSequentialGroup()
                                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                            .addComponent(tfTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                 .addGap(119, 119, 119)))
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE))
                     .addComponent(jScrollPane1))
@@ -140,22 +205,22 @@ public class Patches extends javax.swing.JPanel {
                         .addGap(31, 31, 31)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cbGames, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(112, 112, 112)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(tfTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(tfLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(tfDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(tfAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4))
                         .addGap(48, 48, 48)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -169,14 +234,20 @@ public class Patches extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void tblPatchesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPatchesMouseClicked
+        int row = tblPatches.convertRowIndexToModel(tblPatches.getSelectedRow());
+        //TODO selectaj u modelu
+
+    }//GEN-LAST:event_tblPatchesMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnCreate;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JComboBox<String> cbGames;
     private javax.swing.JEditorPane epDesc;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -184,10 +255,10 @@ public class Patches extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
+    private javax.swing.JTable tblPatches;
+    private javax.swing.JTextField tfAuthor;
+    private javax.swing.JTextField tfDate;
+    private javax.swing.JTextField tfLink;
+    private javax.swing.JTextField tfTitle;
     // End of variables declaration//GEN-END:variables
 }

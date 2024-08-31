@@ -285,7 +285,9 @@ public class Games extends javax.swing.JPanel {
     }//GEN-LAST:event_btnDeleteActionPerformed
     private void getGames() {
         try {
-            games = repo.getGames();
+            games = repo.getGames().stream()
+                    .sorted((g1, g2) -> g1.name.compareToIgnoreCase(g2.name))
+                    .toList();
             DefaultListModel m = new DefaultListModel();
             m.addAll(games);
             lsGames.setModel(m);
