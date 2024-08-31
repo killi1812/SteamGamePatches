@@ -17,7 +17,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" + "IdUser=" + IdUser + ", username=" + username + ", password=" + password + ", isAdmin=" + isAdmin + '}';
+        return isAdmin ? username + " (Admin)" : username;
     }
 
     public User(int IdUser, String username, String password, boolean isAdmin) {
