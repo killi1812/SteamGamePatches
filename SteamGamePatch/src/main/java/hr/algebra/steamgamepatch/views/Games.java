@@ -10,17 +10,17 @@ import hr.algebra.model.Game;
 import hr.algebra.parser.GamePatchParser;
 import hr.algebra.utilities.IconUtils;
 import hr.algebra.utilities.MessageUtils;
+import java.awt.Color;
 import java.io.File;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.ListModel;
+import javax.swing.JTextField;
 import javax.swing.ToolTipManager;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
 
 /**
  *
@@ -34,6 +34,7 @@ public class Games extends javax.swing.JPanel {
     private final Repository repo;
     private List<Game> games;
     private Game selectedGame;
+    private Border dobarBorder = new JTextField().getBorder();
 
     private void SetSelectedGame(Game game) {
         selectedGame = game;
@@ -134,6 +135,11 @@ public class Games extends javax.swing.JPanel {
         });
 
         btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -231,6 +237,11 @@ public class Games extends javax.swing.JPanel {
 
     private void btnParseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnParseActionPerformed
         // TODO add your handling code here:
+
+        if (tfSteamGameId.getText().isBlank()) {
+            tfSteamGameId.setBorder(new EtchedBorder(Color.RED, Color.RED));
+            return;
+        }
         btnParse.setText("Working ...");
         var gameId = tfSteamGameId.getText().trim();
         try {
@@ -245,6 +256,9 @@ public class Games extends javax.swing.JPanel {
         } finally {
             btnParse.setText("Get Patches");
             getGames();
+            tfSteamGameId.setText("");
+            tfSteamGameId.setBorder(dobarBorder);
+
         }
     }//GEN-LAST:event_btnParseActionPerformed
 
@@ -258,6 +272,11 @@ public class Games extends javax.swing.JPanel {
     }//GEN-LAST:event_lsGamesValueChanged
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+
+        if (!ValidateForm()) {
+            return;
+        }
+
         var game = new Game(
                 selectedGame.idSteamGame,
                 tfName.getText(),
@@ -272,16 +291,23 @@ public class Games extends javax.swing.JPanel {
                     "Failed to update game %s", selectedGame.name));
         } finally {
             getGames();
+            clearSelected();
         }
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        // TODO add your handling code here:
+
+        if (selectedGame == null) {
+            MessageUtils.showErrorMessage("Select Game", "Fist select a game");
+            return;
+        }
+
         var o = JOptionPane.showConfirmDialog(this, "This will delete all the patches tied with the game\nAre you shure that you want to delete the game?", "Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
         if (o == JOptionPane.YES_OPTION) {
             try {
                 repo.deleteGame(selectedGame.idSteamGame);
+                Files.delete(Path.of(selectedGame.pictureURL));
             } catch (Exception e) {
                 System.out.println(e);
                 MessageUtils.showErrorMessage("ERROR", String.format(
@@ -289,10 +315,16 @@ public class Games extends javax.swing.JPanel {
 
             } finally {
                 getGames();
+                clearSelected();
             }
         }
 
     }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        clearSelected();
+    }//GEN-LAST:event_btnClearActionPerformed
+
     private void getGames() {
         try {
             games = repo.getGames().stream()
@@ -306,6 +338,35 @@ public class Games extends javax.swing.JPanel {
             MessageUtils.showErrorMessage("ERROR", "Faild to get Games");
         }
     }
+
+    private void clearSelected() {
+
+        tfId.setText("");
+        tfName.setText("");
+        tfName.setBorder(dobarBorder);
+        tfPicture.setText("");
+        tfPicture.setBorder(dobarBorder);
+        tfUrl.setText("");
+        tfUrl.setBorder(dobarBorder);
+    }
+
+    private boolean ValidateForm() {
+        var ret = true;
+        if (tfName.getText().isBlank()) {
+            tfName.setBorder(new EtchedBorder(Color.RED, Color.RED));
+            ret = false;
+        }
+        if (tfPicture.getText().isBlank()) {
+            tfPicture.setBorder(new EtchedBorder(Color.RED, Color.RED));
+            ret = false;
+        }
+        if (tfUrl.getText().isBlank()) {
+            tfUrl.setBorder(new EtchedBorder(Color.RED, Color.RED));
+            ret = false;
+        }
+        return ret;
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnClear;
@@ -327,5 +388,4 @@ public class Games extends javax.swing.JPanel {
     private javax.swing.JTextField tfSteamGameId;
     private javax.swing.JTextField tfUrl;
     // End of variables declaration//GEN-END:variables
-
 }
