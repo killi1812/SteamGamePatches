@@ -348,6 +348,7 @@ public class Games extends javax.swing.JPanel {
         tfPicture.setBorder(dobarBorder);
         tfUrl.setText("");
         tfUrl.setBorder(dobarBorder);
+        lblPic.setIcon(null);
     }
 
     private boolean ValidateForm() {
