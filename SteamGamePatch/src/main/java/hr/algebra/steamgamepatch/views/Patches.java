@@ -12,10 +12,17 @@ import hr.algebra.model.Patch;
 import hr.algebra.steamgamepatch.views.model.GameComboBoxModel;
 import hr.algebra.steamgamepatch.views.model.PatchTableModel;
 import hr.algebra.utilities.MessageUtils;
+import java.awt.Color;
+import java.awt.TextField;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
 
 /**
  *
@@ -25,6 +32,7 @@ public class Patches extends javax.swing.JPanel {
 
     private final Repository repo;
     private int selectedPatchId;
+    private int selectedGameId = 0;
 
     public Patches() {
         repo = RepositoryFactory.getInstance();
@@ -51,35 +59,25 @@ public class Patches extends javax.swing.JPanel {
     }
 
     private void LoadPatches() {
+
         try {
-            var patches = repo.getPatches().stream()
-                    .sorted((p1, p2) -> -p1.pubDate.compareTo(p2.pubDate))
-                    .toList();
+            List<Patch> patches;
+            if (selectedGameId == 0) {
+
+                patches = repo.getPatches().stream()
+                        .sorted((p1, p2) -> -p1.pubDate.compareTo(p2.pubDate))
+                        .toList();
+            } else {
+                patches = repo.getPatches().stream()
+                        .filter(p -> p.gameId == selectedGameId)
+                        .sorted((p1, p2) -> -p1.pubDate.compareTo(p2.pubDate))
+                        .toList();
+            }
             var model = new PatchTableModel(patches);
             tblPatches.setModel(model);
         } catch (Exception e) {
             System.out.println(e);
             MessageUtils.showErrorMessage("ERROR", String.format("Failed To Load Patches"));
-        } finally {
-
-        }
-    }
-
-    private void LoadPatches(int steamGameId) {
-        if (steamGameId == 0) {
-            LoadPatches();
-            return;
-        }
-        try {
-            var patches = repo.getPatches().stream()
-                    .filter(p -> p.gameId == steamGameId)
-                    .sorted((p1, p2) -> -p1.pubDate.compareTo(p2.pubDate))
-                    .toList();
-            var model = new PatchTableModel(patches);
-            tblPatches.setModel(model);
-        } catch (Exception e) {
-            System.out.println(e);
-            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Load Patches for game %d", steamGameId));
         } finally {
 
         }
@@ -282,8 +280,8 @@ public class Patches extends javax.swing.JPanel {
     }//GEN-LAST:event_tblPatchesMouseClicked
 
     private void cbGamesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbGamesItemStateChanged
-        int gameId = ((Game) cbGames.getSelectedItem()).idSteamGame;
-        LoadPatches(gameId);
+        selectedGameId = ((Game) cbGames.getSelectedItem()).idSteamGame;
+        LoadPatches();
     }//GEN-LAST:event_cbGamesItemStateChanged
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
@@ -293,6 +291,7 @@ public class Patches extends javax.swing.JPanel {
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
 
         if (selectedPatchId == 0) {
+            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Delete Patch no patch selected"));
             return;
         }
         try {
@@ -302,6 +301,7 @@ public class Patches extends javax.swing.JPanel {
             MessageUtils.showErrorMessage("ERROR", String.format("Failed To Delete Patch %d", selectedPatchId));
         } finally {
             clearSelected();
+            LoadPatches();
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
@@ -320,6 +320,13 @@ public class Patches extends javax.swing.JPanel {
             return;
         }
 
+        if (selectedGameId == 0) {
+            MessageUtils.showErrorMessage("ERROR",
+                    String.format("Can't create new patch without selecting a game"
+                    ));
+            return;
+        }
+
         if (selectedPatchId != 0) {
             MessageUtils.showErrorMessage("ERROR",
                     String.format("Can't create new patch from selected patch"
@@ -327,30 +334,14 @@ public class Patches extends javax.swing.JPanel {
             return;
         }
 
-        Author author = null;
-        try {
-            author = repo.getAuthors().stream()
-                    .filter(a -> a.name.equals(tfAuthor.getText()))
-                    .findFirst()
-                    .orElse(new Author(tfAuthor.getText()));
-            if (author.idAuthor == 0) {
-                author.idAuthor = repo.createAuthor(author);
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Delete Patch %d", selectedPatchId));
-
+        Author author = getAuthor();
+        if (author == null) {
+            return;
         }
 
-        Date pubDate = null;
-
-        var dateRaw = tfDate.getText();
-        SimpleDateFormat parser = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
-        try {
-            pubDate = new java.sql.Date(parser.parse(dateRaw).getTime());
-        } catch (ParseException e) {
-            System.out.println(e);
-            MessageUtils.showErrorMessage("ERROR", String.format("Wrong date format should be yyyy/MM/dd HH:mm:ss is  %s", dateRaw));
+        Date pubDate = getParsedDate();
+        if (pubDate == null) {
+            return;
         }
 
         Patch newPatch = new Patch(
@@ -359,30 +350,34 @@ public class Patches extends javax.swing.JPanel {
                 tfLink.getText(),
                 pubDate,
                 author.idAuthor,
-                ((Game) cbGames.getSelectedItem()).idSteamGame);
+                selectedGameId);
 
         try {
             repo.createPatch(newPatch);
         } catch (Exception e) {
             System.out.println(e);
-            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Delete Patch %d", selectedPatchId));
+            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Delete Patch"));
 
         } finally {
             clearSelected();
-            LoadPatches(selectedPatchId);
+            LoadPatches();
         }
     }//GEN-LAST:event_btnCreateActionPerformed
 
-    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        // TODO add your handling code here:
-        if (!ValidateForm()) {
-            MessageUtils.showErrorMessage("ERROR",
-                    String.format("Failed To Create new Patch"
-                    ));
-            return;
+    private Date getParsedDate() {
+        var dateRaw = tfDate.getText();
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            return new java.sql.Date(parser.parse(dateRaw).getTime());
+        } catch (ParseException e) {
+            System.out.println(e);
+            MessageUtils.showErrorMessage("ERROR", String.format("Wrong date format should be yyyy-MM-dd is  %s", dateRaw));
         }
-        Author author = null;
+        return null;
+    }
 
+    private Author getAuthor() {
+        Author author = null;
         try {
             author = repo.getAuthors().stream()
                     .filter(a -> a.name.equals(tfAuthor.getText()))
@@ -396,19 +391,44 @@ public class Patches extends javax.swing.JPanel {
             MessageUtils.showErrorMessage("ERROR", String.format("Failed To Delete Patch %d", selectedPatchId));
 
         }
+        return author;
+    }
 
-        Date pubDate = null;
-
-        var dateRaw = tfDate.getText();
-        SimpleDateFormat parser = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
-        try {
-            pubDate = new java.sql.Date(parser.parse(dateRaw).getTime());
-        } catch (ParseException e) {
-            System.out.println(e);
-            MessageUtils.showErrorMessage("ERROR", String.format("Wrong date format should be yyyy/MM/dd HH:mm:ss is  %s", dateRaw));
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        // TODO add your handling code here:
+        if (!ValidateForm()) {
+            MessageUtils.showErrorMessage("ERROR",
+                    String.format("Failed To Edit new Patch"
+                    ));
+            return;
+        }
+        Author author = getAuthor();
+        if (author == null) {
+            return;
         }
 
-        
+        Date pubDate = getParsedDate();
+        if (pubDate == null) {
+            return;
+        }
+
+        //TODO get or set game
+        int gameId = -1;
+        try {
+            var p = repo.getPatch(selectedPatchId);
+            if (p.isPresent()) {
+                gameId = p.get().gameId;
+            }
+        } catch (Exception e) {
+        }
+
+        if (gameId == -1) {
+            MessageUtils.showErrorMessage("ERROR",
+                    String.format("Failed To edit no Game id"
+                    ));
+            return;
+        }
+
         Patch newPatch = new Patch(
                 tfTitle.getText(),
                 epDesc.getText(),
@@ -416,7 +436,7 @@ public class Patches extends javax.swing.JPanel {
                 pubDate,
                 author.idAuthor,
                 //TODO select game
-                ((Game) cbGames.getSelectedItem()).idSteamGame);
+                gameId);
 
         try {
             repo.updatePatch(selectedPatchId, newPatch);
@@ -426,17 +446,28 @@ public class Patches extends javax.swing.JPanel {
 
         } finally {
             clearSelected();
-            LoadPatches(selectedPatchId);
+            LoadPatches();
         }
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void clearSelected() {
+
+        var netreba = new JTextField();
+        var dobarBorder = netreba.getBorder();
+
         cbGames.setSelectedIndex(0);
         selectedPatchId = 0;
+
         tfTitle.setText("");
+        tfTitle.setBorder(dobarBorder);
         tfLink.setText("");
+        tfLink.setBorder(dobarBorder);
         tfDate.setText("");
+        tfDate.setBorder(dobarBorder);
+        tfAuthor.setText("");
+        tfAuthor.setBorder(dobarBorder);
         epDesc.setText("");
+
     }
 
     private void setSelectedPatch(int id) {
@@ -455,17 +486,39 @@ public class Patches extends javax.swing.JPanel {
         selectedPatchId = patch.idPatch;
         tfTitle.setText(patch.title);
         tfLink.setText(patch.link);
-        //TODO add hours
         tfDate.setText(patch.pubDate.toString());
         epDesc.setText(patch.description);
-        //TODO set author
+
+        try {
+            var autor = repo.getAuthor(patch.authorId);
+            if (autor.isPresent()) {
+                tfAuthor.setText(autor.get().name);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            MessageUtils.showErrorMessage("ERROR", String.format("Failed To Delete Patch %d", selectedPatchId));
+        }
     }
 
     private boolean ValidateForm() {
-        if (((Game) cbGames.getSelectedItem()).idSteamGame == 0) {
-            return false;
+        var ret = true;
+        if (tfTitle.getText().isBlank()) {
+            tfTitle.setBorder(new EtchedBorder(Color.RED, Color.RED));
+            ret = false;
         }
-        return true;
+        if (tfAuthor.getText().isBlank()) {
+            tfAuthor.setBorder(new EtchedBorder(Color.RED, Color.RED));
+            ret = false;
+        }
+        if (tfDate.getText().isBlank() || getParsedDate() == null) {
+            tfDate.setBorder(new EtchedBorder(Color.RED, Color.RED));
+            ret = false;
+        }
+        if (tfLink.getText().isBlank()) {
+            tfLink.setBorder(new EtchedBorder(Color.RED, Color.RED));
+            ret = false;
+        }
+        return ret;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
