@@ -117,6 +117,12 @@ public class Patches extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         cbGames = new javax.swing.JComboBox<>();
 
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                formComponentShown(evt);
+            }
+        });
+
         tblPatches.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -449,6 +455,11 @@ public class Patches extends javax.swing.JPanel {
             LoadPatches();
         }
     }//GEN-LAST:event_btnEditActionPerformed
+
+    private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
+        // TODO add your handling code here:
+        LoadGames();
+    }//GEN-LAST:event_formComponentShown
 
     private void clearSelected() {
 

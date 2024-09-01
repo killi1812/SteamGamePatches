@@ -107,7 +107,6 @@ public class Main extends javax.swing.JFrame {
             tpContent.add("Users", new Users());
         }
         tpContent.remove(0);
-//        tpContent.setSelectedIndex(0);
     }
 
     private void loginPanel() {
