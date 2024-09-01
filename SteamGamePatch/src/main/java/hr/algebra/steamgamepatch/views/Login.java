@@ -8,17 +8,16 @@ import hr.algebra.dal.Repository;
 import hr.algebra.dal.RepositoryFactory;
 import hr.algebra.model.User;
 import hr.algebra.utilities.MessageUtils;
+import java.awt.Color;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.border.EtchedBorder;
 
 /**
  *
  * @author fran
  */
 public class Login extends javax.swing.JPanel {
-
-    private static void login() {
-
-    }
 
     private User loggedInUser = null;
     private final Repository repo;
@@ -34,12 +33,29 @@ public class Login extends javax.swing.JPanel {
         return loggedInUser.isAdmin;
     }
 
-    private void clearForm() {
-        //TODO implement
+    private boolean validateForm() {
+        var bool = true;
+
+        if (tfPass.getText().isBlank()) {
+            tfPass.setBorder(new EtchedBorder(Color.RED, Color.RED));
+            bool = false;
+        }
+        if (tfUsername.getText().isBlank()) {
+            tfUsername.setBorder(new EtchedBorder(Color.RED, Color.RED));
+            bool = false;
+        }
+        return bool;
     }
 
-    private void validateForm() {
-        //TODO check if empty
+    private void clearForm() {
+        var netreba = new JTextField();
+        var dobarBorder = netreba.getBorder();
+
+        tfPass.setText("");
+        tfPass.setBorder(dobarBorder);
+        tfUsername.setText("");
+        tfUsername.setBorder(dobarBorder);
+
     }
 
     /**
@@ -114,13 +130,15 @@ public class Login extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        // TODO add your handling code here:
 
         var username = tfUsername.getText();
+
         //TODO ne storaj u string jel ce biti cashiran
         var password = new String(tfPass.getPassword());
 
-        validateForm();
+        if (!validateForm()) {
+            return;
+        }
 
         User user = null;
         try {
