@@ -8,9 +8,12 @@ import hr.algebra.dal.Repository;
 import hr.algebra.dal.RepositoryFactory;
 import hr.algebra.model.User;
 import hr.algebra.utilities.MessageUtils;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
+import javax.swing.JTextField;
+import javax.swing.border.EtchedBorder;
 
 /**
  *
@@ -56,6 +59,7 @@ public class Users extends javax.swing.JPanel {
         Admin = new javax.swing.JCheckBox();
         btnCreate = new javax.swing.JButton();
         tfPassword = new javax.swing.JPasswordField();
+        btnClear = new javax.swing.JButton();
 
         jLabel2.setText("Selected User");
 
@@ -96,12 +100,19 @@ public class Users extends javax.swing.JPanel {
             }
         });
 
+        btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(28, Short.MAX_VALUE)
+                .addContainerGap(37, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(49, 49, 49)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -122,8 +133,10 @@ public class Users extends javax.swing.JPanel {
                         .addGap(18, 18, 18)
                         .addComponent(btnEdit)
                         .addGap(18, 18, 18)
-                        .addComponent(btnDelete)))
-                .addContainerGap(225, Short.MAX_VALUE))
+                        .addComponent(btnDelete)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnClear)))
+                .addContainerGap(165, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -151,7 +164,8 @@ public class Users extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnEdit)
                             .addComponent(btnDelete)
-                            .addComponent(btnCreate))
+                            .addComponent(btnCreate)
+                            .addComponent(btnClear))
                         .addGap(0, 99, Short.MAX_VALUE)))
                 .addContainerGap(59, Short.MAX_VALUE))
         );
@@ -243,24 +257,42 @@ public class Users extends javax.swing.JPanel {
             ClearSelected();
         }
     }//GEN-LAST:event_btnCreateActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        ClearSelected();
+    }//GEN-LAST:event_btnClearActionPerformed
     private void ClearSelected() {
+
+        var netreba = new JTextField();
+        var dobarBorder = netreba.getBorder();
+
         tfPassword.setText("");
+        tfPassword.setBorder(dobarBorder);
         tfUsername.setText("");
+        tfUsername.setBorder(dobarBorder);
+
         Admin.setSelected(false);
         selectedUser = null;
 
     }
 
     private boolean FormInvalid() {
-        var pass = tfPassword.getText();
-        var usr = tfUsername.getText();
-        //TODO implement
-        MessageUtils.showErrorMessage("Not Implemented", "Validation is not implemented always returns true");
-        return true;
+        var bool = false;
+
+        if (tfPassword.getText().isBlank()) {
+            tfPassword.setBorder(new EtchedBorder(Color.RED, Color.RED));
+            bool = true;
+        }
+        if (tfUsername.getText().isBlank()) {
+            tfUsername.setBorder(new EtchedBorder(Color.RED, Color.RED));
+            bool = true;
+        }
+        return bool;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox Admin;
+    private javax.swing.JButton btnClear;
     private javax.swing.JButton btnCreate;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
