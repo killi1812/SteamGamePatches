@@ -459,6 +459,7 @@ public class Patches extends javax.swing.JPanel {
     private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
         // TODO add your handling code here:
         LoadGames();
+        LoadPatches();
     }//GEN-LAST:event_formComponentShown
 
     private void clearSelected() {
